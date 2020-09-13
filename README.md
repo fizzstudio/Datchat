@@ -1,2 +1,3 @@
 # Datchat
-Data chatbot
+A data chatbot project by Fizz Studio interns.
+
