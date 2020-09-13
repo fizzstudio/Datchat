@@ -1,17 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Datchat</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="Simple AI Chat Bot Demo with Web Speech API">
+
+  <title>Simple AI Demo with Web Speech API</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-  <h1>Datchat</h1>
-  <p>A basic chatbot with graphing functionality.</p>
-  <p>This is a test.</p>
-  <p>
-    Nothing should be shown here, for now hahaha.
-  </p>
+  <section>
+    <h1>Simple AI Bot</h1>
+
+    <button><i class="fa fa-microphone"></i></button>
+
+    <div>
+      <p>You said: <em class="output-you">...</em></p>
+      <p>Bot replied: <em class="output-bot">...</em></p>
+    </div>
+
+    <div class="wrapper">
+      <canvas id="myChart"></canvas>
+      <!-- <canvas id='myChart' width="800" height="400"></canvas> -->
+    </div>
+
+  </section>
+
+  <!-- <script src="/socket.io/socket.io.js"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+  <script src="stat_helper.js"></script>
+  <script src="script.js"></script>
 </body>
+
 </html>
