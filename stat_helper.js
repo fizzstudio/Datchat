@@ -1,21 +1,47 @@
-async function createChart(addr, title, ctx) {
-    let data = await getData(addr);
-    let myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: data.xs,
-            datasets: [{
-                label: title,
-                data: data.ys,
-                backgroundColor: "rgba(255, 99, 132, 0.2)",
-                borderColor: "rgba(255, 99, 132, 1)",
-                borderWidth: 1,
-                fill: false
-            }]
-        },
-    })
-    return myChart;
-};
+class ChartIt {
+    constructor(addr, title, ctx, type) {
+        this.addr = addr;
+        this.title = title;
+        this.ctx = ctx;
+        this.type = type;
+        this.median = 0;
+        this.ys = [];
+    }
+
+    createChart = async function () {
+        let data = await getData(this.addr);
+        this.setData(data.ys);
+        let myChart = new Chart(this.ctx, {
+            type: this.type,
+            data: {
+                labels: data.xs,
+                datasets: [{
+                    label: this.title,
+                    data: data.ys,
+                    backgroundColor: "rgba(255, 99, 132, 0.2)",
+                    borderColor: "rgba(255, 99, 132, 1)",
+                    borderWidth: 1,
+                    fill: false
+                }]
+            },
+        })
+        this.setMedian(this.ys);
+        return myChart;
+    };
+
+    setData(arr) {
+        this.ys = arr;
+    };
+
+    setMedian(arr) {
+        this.median = cal_median(arr);
+    };
+
+    getMedian() {
+        return this.median;
+    };
+}
+
 
 async function getData(addr) {
     let xs = [];
@@ -35,7 +61,7 @@ async function getData(addr) {
     return { xs, ys };
 }
 
-let getMedian = function (array) {
+let cal_median = function (array) {
     array.sort((a, b) => a - b);
     let half = Math.floor(array.length / 2);
     if (array.length % 2 == 1) {

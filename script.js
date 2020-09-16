@@ -3,6 +3,8 @@
 var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
 var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList
 var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent
+let chartIt = undefined;
+let chart = undefined;
 let drawn = false;
 
 const recognition = new SpeechRecognition();
@@ -59,18 +61,16 @@ function synthVoice(text) {
     speech.text = "Sorry, I did not understand that.";
 
     if (!drawn) {
-        stars = Array.from({ length: 5 }, () => Math.floor(Math.random() * 10));
-        media = ['Facebook', 'Twitter', 'Instagram', 'Wechat', 'Tik-Tok'];
+        chartIt = new ChartIt('test.csv', 'Global Average Temperature', ctx, type);
+        chart = chartIt.createChart();
     }
 
     if (/table|chart/.test(text)) {
-        if (drawn) {
-            // data = await getData('test.csv');
-        }
         if (/pie/.test(text)) { type = 'pie' }
         if (/line/.test(text)) { type = 'line' }
         if (/bar/.test(text)) { type = 'bar' }
-        let chart = createChart('test.csv', 'Global Average Temperature', ctx, type);
+        chartIt = new ChartIt('test.csv', 'Global Average Temperature', ctx, type);
+        chart = chartIt.createChart();
         drawn = true;
         speech.text = 'Below is the chart you want.'
     }
@@ -88,7 +88,7 @@ function synthVoice(text) {
         if (!drawn) {
             speech.text = 'You need first to have a chart.'
         } else {
-            speech.text = 'The median of the data is ' + getMedian(stars);
+            speech.text = 'The median of the data is ' + chartIt.median;
         }
     }
 
