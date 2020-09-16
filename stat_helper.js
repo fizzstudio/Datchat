@@ -42,7 +42,6 @@ class ChartIt {
     };
 }
 
-
 async function getData(addr) {
     let xs = [];
     let ys = [];

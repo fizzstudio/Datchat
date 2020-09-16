@@ -60,10 +60,10 @@ function synthVoice(text) {
 
     speech.text = "Sorry, I did not understand that.";
 
-    if (!drawn) {
-        chartIt = new ChartIt('test.csv', 'Global Average Temperature', ctx, type);
-        chart = chartIt.createChart();
-    }
+    // if (!drawn) {
+    //     chartIt = new ChartIt('test.csv', 'Global Average Temperature', ctx, type);
+    //     chart = chartIt.createChart();
+    // }
 
     if (/table|chart/.test(text)) {
         if (/pie/.test(text)) { type = 'pie' }
