@@ -55,7 +55,6 @@ function synthVoice(text) {
     const speech = new SpeechSynthesisUtterance();
     let ctx = document.getElementById('myChart');
     let type = 'line';
-    let data = getData('test.csv');
 
     speech.text = "Sorry, I did not understand that.";
 
@@ -66,12 +65,12 @@ function synthVoice(text) {
 
     if (/table|chart/.test(text)) {
         if (drawn) {
-            data = getData('test.csv');
+            // data = await getData('test.csv');
         }
         if (/pie/.test(text)) { type = 'pie' }
         if (/line/.test(text)) { type = 'line' }
         if (/bar/.test(text)) { type = 'bar' }
-        let chart = createChart(data.xs, data.ys, 'Social Media Stars', ctx, type);
+        let chart = createChart('test.csv', 'Global Average Temperature', ctx, type);
         drawn = true;
         speech.text = 'Below is the chart you want.'
     }
