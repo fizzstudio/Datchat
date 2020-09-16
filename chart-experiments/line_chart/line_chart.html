@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Line Chart</title>
+
+  <style type="text/css">
+    header {
+      position: relative;
+      text-align: center;
+    }
+
+    footer {
+      font-size: smaller;
+      margin-top: 2em;
+      text-align: center;
+    }
+
+    body>div>div,
+    header {
+      margin: 0 auto;
+      max-width: 960px;
+      padding: 0 1em;
+      position: relative;
+    }
+
+    fieldset {
+      margin-top: 2rem;
+    }
+
+      fieldset label {
+        display: block;
+        padding-bottom: 0.2rem;
+      }
+
+      fieldset label input {
+        margin-right: 0.5rem;
+      }
+
+      fieldset.series_fieldset {
+        margin-top: 0;
+      }
+
+        fieldset.series_fieldset label {
+          display: inline-block;
+          margin-right: 0.75rem;
+        }
+  </style>
+  <link rel="stylesheet" href="line_chart.css">
+</head>
+
+<body>
+  <div id="fullContainer">
+    <header role="banner">
+      <h1>Line Chart</h1>
+    </header>
+    <main role="main">
+      <section id="chart">
+      </section>
+
+      <section id="controls">
+      </section>
+    </main>
+  </div>
+
+  <script src="ui.js" type="module"></script>
+
+</body>
+</html>
