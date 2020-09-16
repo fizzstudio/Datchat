@@ -26,3 +26,21 @@ let getMedian = function (array) {
         return (array[half] + array[half - 1]) / 2;
     }
 }
+
+async function getData(addr) {
+    let xs = [];
+    let ys = [];
+    let response = await fetch(addr);
+    let data = await response.text();
+
+    let table = data.split('\n').slice(1);
+    table.forEach(elt => {
+        let cols = elt.split(',');
+        let year = cols[0];
+        xs.push(year);
+        let temp = cols[1];
+        ys.push(parseFloat(temp) + 14);
+        console.log(year, temp);
+    });
+    return { xs, ys };
+}
