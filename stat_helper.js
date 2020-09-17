@@ -14,7 +14,7 @@ class ChartIt {
         this.setData(data.ys);
         this.datasets[0] = {
             label: this.title,
-            data: data.ys,
+            data: this.ys,
             backgroundColor: "rgba(255, 99, 132, 0.2)",
             borderColor: "rgba(255, 99, 132, 1)",
             borderWidth: 1,
@@ -43,6 +43,22 @@ class ChartIt {
     getMedian() {
         return this.median;
     };
+
+    setMedianDataset(data) {
+        let arr = [];
+        for (let i = 0; i < 200; i++) {
+            arr.push(data);
+        }
+        console.log(arr)
+        this.datasets[1] = {
+            label: 'Median',
+            data: arr,
+            backgroundColor: "black",
+            borderColor: "black",
+            borderWidth: 1,
+            fill: false
+        };
+    }
 }
 
 async function getData(addr) {
@@ -72,3 +88,4 @@ let cal_median = function (array) {
         return (array[half] + array[half - 1]) / 2;
     }
 }
+

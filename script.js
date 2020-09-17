@@ -60,11 +60,6 @@ function synthVoice(text) {
 
     speech.text = "Sorry, I did not understand that.";
 
-    // if (!drawn) {
-    //     chartIt = new ChartIt('test.csv', 'Global Average Temperature', ctx, type);
-    //     chart = chartIt.createChart();
-    // }
-
     if (/table|chart/.test(text)) {
         if (/pie/.test(text)) { type = 'pie' }
         if (/line/.test(text)) { type = 'line' }
@@ -89,6 +84,8 @@ function synthVoice(text) {
             speech.text = 'You need first to have a chart.'
         } else {
             speech.text = 'The median of the data is ' + chartIt.median;
+            chartIt.setMedianDataset(chartIt.median);
+            let chart_with_median_line = chartIt.createChart();
         }
     }
 
