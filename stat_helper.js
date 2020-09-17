@@ -5,6 +5,7 @@ class ChartIt {
         this.ctx = ctx;
         this.type = type;
         this.median = 0;
+        this.mean = 0;
         this.ys = [];
         this.datasets = [];
     }
@@ -29,6 +30,7 @@ class ChartIt {
             },
         })
         this.setMedian(this.ys);
+        this.setMean(this.ys);
         return myChart;
     };
 
@@ -39,6 +41,10 @@ class ChartIt {
     setMedian(arr) {
         this.median = cal_median(arr);
     };
+
+    setMean(arr){
+        this.mean = cal_mean(arr);
+    }
 
     getMedian() {
         return this.median;
@@ -52,6 +58,22 @@ class ChartIt {
         console.log(arr)
         this.datasets[1] = {
             label: 'Median',
+            data: arr,
+            backgroundColor: "black",
+            borderColor: "black",
+            borderWidth: 1,
+            fill: false
+        };
+    }
+
+    setMeanDataset(data) {
+        let arr = [];
+        for (let i = 0; i < 200; i++) {
+            arr.push(data);
+        }
+        console.log(arr)
+        this.datasets[1] = {
+            label: 'Mean',
             data: arr,
             backgroundColor: "black",
             borderColor: "black",
@@ -87,5 +109,13 @@ let cal_median = function (array) {
     } else {
         return (array[half] + array[half - 1]) / 2;
     }
+}
+
+let cal_mean = function(array){
+    let sum = 0;
+    for (let i = 0; i < array.length; i++){
+        sum += array[i];
+    }
+    return sum/array.length;
 }
 

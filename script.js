@@ -74,8 +74,10 @@ function synthVoice(text) {
         if (!drawn) {
             speech.text = 'You need first to have a chart.'
         } else {
-            const average = arr => arr.reduce((sume, el) => sume + el, 0) / arr.length;
-            speech.text = 'The average of the data is ' + average(stars);
+            // const average = arr => arr.reduce((sume, el) => sume + el, 0) / arr.length;
+            speech.text = 'The average of the data is ' + chartIt.mean.toFixed(2);
+            chartIt.setMeanDataset(chartIt.mean);
+            let chart_with_mean_line = chartIt.createChart();
         }
     }
 
@@ -83,7 +85,7 @@ function synthVoice(text) {
         if (!drawn) {
             speech.text = 'You need first to have a chart.'
         } else {
-            speech.text = 'The median of the data is ' + chartIt.median;
+            speech.text = 'The median of the data is ' + chartIt.median.toFixed(2);
             chartIt.setMedianDataset(chartIt.median);
             let chart_with_median_line = chartIt.createChart();
         }
