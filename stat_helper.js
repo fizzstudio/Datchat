@@ -6,23 +6,26 @@ class ChartIt {
         this.type = type;
         this.median = 0;
         this.ys = [];
+        this.datasets = [];
     }
 
     createChart = async function () {
         let data = await getData(this.addr);
         this.setData(data.ys);
+        this.datasets[0] = {
+            label: this.title,
+            data: data.ys,
+            backgroundColor: "rgba(255, 99, 132, 0.2)",
+            borderColor: "rgba(255, 99, 132, 1)",
+            borderWidth: 1,
+            fill: false
+        }
+
         let myChart = new Chart(this.ctx, {
             type: this.type,
             data: {
                 labels: data.xs,
-                datasets: [{
-                    label: this.title,
-                    data: data.ys,
-                    backgroundColor: "rgba(255, 99, 132, 0.2)",
-                    borderColor: "rgba(255, 99, 132, 1)",
-                    borderWidth: 1,
-                    fill: false
-                }]
+                datasets: this.datasets,
             },
         })
         this.setMedian(this.ys);
