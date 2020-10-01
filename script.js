@@ -61,6 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const options = [];
     const synth = window.speechSynthesis;
     let speech = new SpeechSynthesisUtterance();
+    let option = new Option("Please request a table first", ["chart"]);
+    options.push(option);
     let option1 = new Option("you can select the average", ['average', "mean"]);
     options.push(option1);
     let option2 = new Option("You can select the median", ["median"]);
@@ -69,19 +71,15 @@ document.addEventListener('DOMContentLoaded', () => {
     setupInterface();
 
     function setupInterface() {
-        speech.text = "Please request a table first";
-        synth.speak(speech);
-
         for (let i = 0; i < options.length; i++) {
             speech = new SpeechSynthesisUtterance();
-            speech.text = options[i].getContent();
-            console.log(options[i].getHash());
-
-            // synth.speak(speech);
+            if (options[i].getState() !== states.ASKED) {
+                speech.text = options[i].getContent();
+                console.log(options[i].getHash());
+                synth.speak(speech);
+            }
         }
-
     }
-
 
 
     function updateState(text) {
@@ -142,6 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
         speech.text = "Sorry, I did not understand that.";
 
         if (/table|chart/.test(text)) {
+            updateState("chart");
             if (/pie/.test(text)) {
                 type = 'pie'
             }
@@ -183,5 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         synth.speak(speech);
         outputBot.textContent = speech.text;
+
+        setupInterface();
     }
 });
