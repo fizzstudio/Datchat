@@ -25,6 +25,7 @@ const states = {
     RECALLED: 2
 
 }
+
 const Option = class {
     constructor(content, hashtag) {
         this.content = content;
@@ -50,6 +51,10 @@ const Option = class {
 
     updateState(state) {
         this.state = state;
+    }
+
+    resetState() {
+        this.state = states.UNASKED;
     }
 
     getHash() {
@@ -98,8 +103,8 @@ function setupInterface() {
         const synth = window.speechSynthesis;
         const speech = new SpeechSynthesisUtterance();
         speech.text = "Options are done. Do you want to start over?"
-        synth.speak(speech);
 
+        synth.speak(speech);
     }
 }
 
@@ -220,7 +225,8 @@ function synthVoice(text) {
     }
 
     if (/start/.test(text)) {
-        setupInterface();
+        ctx.style.visibility = "hidden";
+        options.forEach(option => option.resetState());
         speech.text = 'Ok, I just restarted myself';
     }
 
