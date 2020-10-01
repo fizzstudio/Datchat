@@ -53,95 +53,96 @@ document.addEventListener('DOMContentLoaded', () => {
         synth.speak(speech);
     }
 
-});
 
 
-document.querySelector('button').addEventListener('click', () => {
-    recognition.start();
-});
 
-recognition.addEventListener('speechstart', () => {
-    console.log('Speech has been detected.');
-});
+    document.querySelector('button').addEventListener('click', () => {
+        recognition.start();
+    });
 
-recognition.addEventListener('result', (e) => {
-    console.log('Result has been detected.');
+    recognition.addEventListener('speechstart', () => {
+        console.log('Speech has been detected.');
+    });
 
-    let last = e.results.length - 1;
-    let text = e.results[last][0].transcript;
+    recognition.addEventListener('result', (e) => {
+        console.log('Result has been detected.');
 
-    outputYou.textContent = text.charAt(0).toUpperCase() + text.slice(1);;
+        let last = e.results.length - 1;
+        let text = e.results[last][0].transcript;
 
-    synthVoice(text);
-    console.log('Confidence: ' + e.results[0][0].confidence);
+        outputYou.textContent = text.charAt(0).toUpperCase() + text.slice(1);;
 
-    //   socket.emit('chat message', text);
-});
+        synthVoice(text);
+        console.log('Confidence: ' + e.results[0][0].confidence);
 
-recognition.addEventListener('speechend', () => {
-    console.log("Speech has ended");
-    recognition.stop();
-});
+        //   socket.emit('chat message', text);
+    });
 
-recognition.addEventListener('error', (e) => {
-    outputBot.textContent = 'Error: ' + e.error;
-});
+    recognition.addEventListener('speechend', () => {
+        console.log("Speech has ended");
+        recognition.stop();
+    });
 
-let stars = {};
-let media = {};
+    recognition.addEventListener('error', (e) => {
+        outputBot.textContent = 'Error: ' + e.error;
+    });
 
-let states = {
-    UNASKED: "unasked",
-    ASKED: "asked",
-    RECALLED: "recalled"
-}
+    let stars = {};
+    let media = {};
 
-
-function synthVoice(text) {
-    const synth = window.speechSynthesis;
-    const speech = new SpeechSynthesisUtterance();
-    let ctx = document.getElementById('myChart');
-    let type = 'line';
-
-    speech.text = "Sorry, I did not understand that.";
-
-    if (/table|chart/.test(text)) {
-        if (/pie/.test(text)) {
-            type = 'pie'
-        }
-        if (/line/.test(text)) {
-            type = 'line'
-        }
-        if (/bar/.test(text)) {
-            type = 'bar'
-        }
-        chartIt = new ChartIt('test.csv', 'Global Average Temperature', ctx, type);
-        chart = chartIt.createChart();
-        drawn = true;
-        speech.text = 'Below is the chart you want.'
+    let states = {
+        UNASKED: "unasked",
+        ASKED: "asked",
+        RECALLED: "recalled"
     }
 
-    if (/mean|average/.test(text)) {
-        if (!drawn) {
-            speech.text = 'You need first to have a chart.'
-        } else {
-            // const average = arr => arr.reduce((sume, el) => sume + el, 0) / arr.length;
-            speech.text = 'The average of the data is ' + chartIt.mean.toFixed(2);
-            chartIt.setMeanDataset(chartIt.mean);
-            let chart_with_mean_line = chartIt.createChart();
-        }
-    }
 
-    if (/median/.test(text)) {
-        if (!drawn) {
-            speech.text = 'You need first to have a chart.'
-        } else {
-            speech.text = 'The median of the data is ' + chartIt.median.toFixed(2);
-            chartIt.setMedianDataset(chartIt.median);
-            let chart_with_median_line = chartIt.createChart();
-        }
-    }
+    function synthVoice(text) {
+        const synth = window.speechSynthesis;
+        const speech = new SpeechSynthesisUtterance();
+        let ctx = document.getElementById('myChart');
+        let type = 'line';
 
-    synth.speak(speech);
-    outputBot.textContent = speech.text;
-}
+        speech.text = "Sorry, I did not understand that.";
+
+        if (/table|chart/.test(text)) {
+            if (/pie/.test(text)) {
+                type = 'pie'
+            }
+            if (/line/.test(text)) {
+                type = 'line'
+            }
+            if (/bar/.test(text)) {
+                type = 'bar'
+            }
+            chartIt = new ChartIt('test.csv', 'Global Average Temperature', ctx, type);
+            chart = chartIt.createChart();
+            drawn = true;
+            speech.text = 'Below is the chart you want.'
+        }
+
+        if (/mean|average/.test(text)) {
+            if (!drawn) {
+                speech.text = 'You need first to have a chart.'
+            } else {
+                // const average = arr => arr.reduce((sume, el) => sume + el, 0) / arr.length;
+                speech.text = 'The average of the data is ' + chartIt.mean.toFixed(2);
+                chartIt.setMeanDataset(chartIt.mean);
+                let chart_with_mean_line = chartIt.createChart();
+            }
+        }
+
+        if (/median/.test(text)) {
+            if (!drawn) {
+                speech.text = 'You need first to have a chart.'
+            } else {
+                speech.text = 'The median of the data is ' + chartIt.median.toFixed(2);
+                chartIt.setMedianDataset(chartIt.median);
+                let chart_with_median_line = chartIt.createChart();
+            }
+        }
+
+        synth.speak(speech);
+        outputBot.textContent = speech.text;
+    }
+});
