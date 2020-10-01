@@ -52,6 +52,12 @@ recognition.addEventListener('error', (e) => {
 let stars = {};
 let media = {};
 
+let states = {
+    UNASKED: "unasked",
+    ASKED: "asked",
+    RECALLED: "recalled"
+}
+
 
 document.addEventListener('DOMContentLoaded', () => {
 
