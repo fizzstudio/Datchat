@@ -19,11 +19,18 @@ recognition.maxAlternatives = 1;
 const outputYou = document.querySelector('.output-you');
 const outputBot = document.querySelector('.output-bot');
 
-const options = [];
+const states = {
+    UNASKED: 0,
+    ASKED: 1,
+    RECALLED: 2
+
+}
 const Option = class {
-    constructor(content) {
+    constructor(content, hashtag) {
         this.content = content;
+        this.hashtag = hashtag;
         this.answers = [];
+        this.state = states.UNASKED;
     }
     getContent() {
         return this.content;
@@ -36,24 +43,62 @@ const Option = class {
     getAnswers() {
         return this.answers;
     }
+
+    getState() {
+        return this.state;
+    }
+
+    updateState(state) {
+        this.state = state;
+    }
+
+    getHash() {
+        return this.hashtag;
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-
+    const options = [];
     const synth = window.speechSynthesis;
-    const speech = new SpeechSynthesisUtterance();
-
-    let option1 = new Option("You can select the average");
+    let speech = new SpeechSynthesisUtterance();
+    let option1 = new Option("you can select the average", ['average', "mean"]);
     options.push(option1);
-    let option2 = new Option("You can select the median");
+    let option2 = new Option("You can select the median", ["median"]);
     options.push(option2);
 
-    for (let i = 0; i < options.length; i++) {
-        speech.text = options[i].getContent();
+    setupInterface();
+
+    function setupInterface() {
+        speech.text = "Please request a table first";
         synth.speak(speech);
+
+        for (let i = 0; i < options.length; i++) {
+            speech = new SpeechSynthesisUtterance();
+            speech.text = options[i].getContent();
+            console.log(options[i].getHash());
+
+            // synth.speak(speech);
+        }
+
     }
 
 
+
+    function updateState(text) {
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].getHash().includes(text)) {
+                switch (options[i].getState()) {
+                    case states.UNASKED:
+                        options[i].updateState(states.ASKED);
+                        break;
+                    case states.ASKED:
+                        options[i].updateState(states.RECALLED);
+                        break;
+                }
+            }
+            console.log(options[i].getState());
+        }
+    }
 
 
     document.querySelector('button').addEventListener('click', () => {
@@ -87,15 +132,6 @@ document.addEventListener('DOMContentLoaded', () => {
         outputBot.textContent = 'Error: ' + e.error;
     });
 
-    let stars = {};
-    let media = {};
-
-    let states = {
-        UNASKED: "unasked",
-        ASKED: "asked",
-        RECALLED: "recalled"
-    }
-
 
     function synthVoice(text) {
         const synth = window.speechSynthesis;
@@ -119,9 +155,11 @@ document.addEventListener('DOMContentLoaded', () => {
             chart = chartIt.createChart();
             drawn = true;
             speech.text = 'Below is the chart you want.'
+
         }
 
         if (/mean|average/.test(text)) {
+            updateState("average");
             if (!drawn) {
                 speech.text = 'You need first to have a chart.'
             } else {
@@ -133,6 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (/median/.test(text)) {
+            updateState("median");
             if (!drawn) {
                 speech.text = 'You need first to have a chart.'
             } else {

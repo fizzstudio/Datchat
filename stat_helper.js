@@ -55,7 +55,6 @@ class ChartIt {
         for (let i = 0; i < 200; i++) {
             arr.push(data);
         }
-        console.log(arr)
         this.datasets[1] = {
             label: 'Median',
             data: arr,
@@ -71,7 +70,6 @@ class ChartIt {
         for (let i = 0; i < 200; i++) {
             arr.push(data);
         }
-        console.log(arr)
         this.datasets[1] = {
             label: 'Mean',
             data: arr,
@@ -96,7 +94,7 @@ async function getData(addr) {
         xs.push(year);
         let temp = cols[1];
         ys.push(parseFloat(temp) + 14);
-        console.log(year, temp);
+        // console.log(year, temp);
     });
     return { xs, ys };
 }
