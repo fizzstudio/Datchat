@@ -19,6 +19,43 @@ recognition.maxAlternatives = 1;
 const outputYou = document.querySelector('.output-you');
 const outputBot = document.querySelector('.output-bot');
 
+const options = [];
+const Option = class {
+    constructor(content) {
+        this.content = content;
+        this.answers = [];
+    }
+    getContent() {
+        return this.content;
+    }
+
+    setAnswers(answer) {
+        this.answers.push(answer);
+    }
+
+    getAnswers() {
+        return this.answers;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    const synth = window.speechSynthesis;
+    const speech = new SpeechSynthesisUtterance();
+
+    let option1 = new Option("You can select the average");
+    options.push(option1);
+    let option2 = new Option("You can select the median");
+    options.push(option2);
+
+    for (let i = 0; i < options.length; i++) {
+        speech.text = options[i].getContent();
+        synth.speak(speech);
+    }
+
+});
+
+
 document.querySelector('button').addEventListener('click', () => {
     recognition.start();
 });
@@ -42,6 +79,7 @@ recognition.addEventListener('result', (e) => {
 });
 
 recognition.addEventListener('speechend', () => {
+    console.log("Speech has ended");
     recognition.stop();
 });
 
@@ -59,22 +97,6 @@ let states = {
 }
 
 
-document.addEventListener('DOMContentLoaded', () => {
-
-    const selection_pool = [];
-    selection_pool.push("You can select the average");
-    selection_pool.push("You can select the median");
-
-    const synth = window.speechSynthesis;
-    const speech = new SpeechSynthesisUtterance();
-    const pool = selection_pool;
-    for (let i = 0; i < pool.length; i++) {
-        speech.text = pool[i];
-        synth.speak(speech);
-    }
-
-});
-
 function synthVoice(text) {
     const synth = window.speechSynthesis;
     const speech = new SpeechSynthesisUtterance();
@@ -84,9 +106,15 @@ function synthVoice(text) {
     speech.text = "Sorry, I did not understand that.";
 
     if (/table|chart/.test(text)) {
-        if (/pie/.test(text)) { type = 'pie' }
-        if (/line/.test(text)) { type = 'line' }
-        if (/bar/.test(text)) { type = 'bar' }
+        if (/pie/.test(text)) {
+            type = 'pie'
+        }
+        if (/line/.test(text)) {
+            type = 'line'
+        }
+        if (/bar/.test(text)) {
+            type = 'bar'
+        }
         chartIt = new ChartIt('test.csv', 'Global Average Temperature', ctx, type);
         chart = chartIt.createChart();
         drawn = true;
