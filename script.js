@@ -61,29 +61,25 @@ const options = [];
 
 function startBot() {
     document.addEventListener('DOMContentLoaded', () => {
-
-        // let speech = new SpeechSynthesisUtterance();
-        let option = new Option("Please request a table first", ["chart"]);
-        options.push(option);
-        let option1 = new Option("You can select the average", ['average', "mean"]);
-        options.push(option1);
-        let option2 = new Option("You can select the median", ["median"]);
-        options.push(option2);
+        options.push(new Option("Please request a table first", ["chart"]));
+        options.push(new Option("You can select the average", ['average', "mean"]));
+        options.push(new Option("You can select the median", ["median"]));
 
         setupInterface();
-        onClick();
-        onSpeechStart()
-        onSpeechResult();
-        onSpeechEnd();
-        onSpeechError();
-
+        operate();
     });
 
 }
 
 startBot();
 
-
+function operate() {
+    onClick();
+    onSpeechStart()
+    onSpeechResult();
+    onSpeechEnd();
+    onSpeechError();
+}
 
 function setupInterface() {
     let silence = 0;
@@ -142,14 +138,12 @@ function onSpeechResult() {
         console.log('Result has been detected.');
 
         let last = e.results.length - 1;
-        let text = e.results[last][0].transcript;
+        let text = e.results[last][0].transcript.toLowerCase();
 
         outputYou.textContent = text.charAt(0).toUpperCase() + text.slice(1);;
 
         synthVoice(text);
         console.log('Confidence: ' + e.results[0][0].confidence);
-
-        //   socket.emit('chat message', text);
     });
 }
 
@@ -197,7 +191,7 @@ function synthVoice(text) {
 
     }
 
-    if (/mean|average/.test(text)) {
+    if (/mean|average|avg/.test(text)) {
         if (!drawn) {
             speech.text = 'You need first to have a chart.'
         } else {
