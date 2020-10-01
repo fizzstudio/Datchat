@@ -52,6 +52,23 @@ recognition.addEventListener('error', (e) => {
 let stars = {};
 let media = {};
 
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    const selection_pool = [];
+    selection_pool.push("You can select the average");
+    selection_pool.push("You can select the median");
+
+    const synth = window.speechSynthesis;
+    const speech = new SpeechSynthesisUtterance();
+    const pool = selection_pool;
+    for (let i = 0; i < pool.length; i++) {
+        speech.text = pool[i];
+        synth.speak(speech);
+    }
+
+});
+
 function synthVoice(text) {
     const synth = window.speechSynthesis;
     const speech = new SpeechSynthesisUtterance();
