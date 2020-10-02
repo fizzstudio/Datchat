@@ -1,8 +1,8 @@
 class ChartIt {
-    constructor(addr, title, ctx, type) {
+    constructor(addr, title, canvas, type) {
         this.addr = addr;
         this.title = title;
-        this.ctx = ctx;
+        this.canvas = canvas;
         this.type = type;
         this.median = 0;
         this.mean = 0;
@@ -22,7 +22,7 @@ class ChartIt {
             fill: false
         }
 
-        let myChart = new Chart(this.ctx, {
+        let myChart = new Chart(this.canvas, {
             type: this.type,
             data: {
                 labels: data.xs,

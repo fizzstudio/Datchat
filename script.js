@@ -64,9 +64,11 @@ const Option = class {
 
 const options = [];
 
+startBot();
+
 function startBot() {
     document.addEventListener('DOMContentLoaded', () => {
-        options.push(new Option("Please request a table first", ["chart"]));
+        options.push(new Option("Please request a chart first", ["chart"]));
         options.push(new Option("You can select the average", ['average', "mean"]));
         options.push(new Option("You can select the median", ["median"]));
 
@@ -75,8 +77,6 @@ function startBot() {
     });
 
 }
-
-startBot();
 
 function operate() {
     onClick();
@@ -102,9 +102,9 @@ function setupInterface() {
     if (silence == options.length) {
         const synth = window.speechSynthesis;
         const speech = new SpeechSynthesisUtterance();
-        speech.text = "Options are done. Do you want to start over?"
-
+        speech.text = "Options are done. You can start over";
         synth.speak(speech);
+
     }
 }
 
@@ -169,13 +169,17 @@ function onSpeechError() {
 function synthVoice(text) {
     const synth = window.speechSynthesis;
     const speech = new SpeechSynthesisUtterance();
-    let ctx = document.getElementById('myChart');
+    let wrapper = document.getElementById('wrapper');
+    let canvas = document.getElementById('myChart');
     let type = 'line';
-    let option = null;
+    let option;
+    let answers;
+
 
     speech.text = "Sorry, I did not understand that.";
 
     if (/table|chart/.test(text)) {
+        canvas.style.visibility = 'visible';
 
         if (/pie/.test(text)) {
             type = 'pie'
@@ -186,52 +190,72 @@ function synthVoice(text) {
         if (/bar/.test(text)) {
             type = 'bar'
         }
-        chartIt = new ChartIt('test.csv', 'Global Average Temperature', ctx, type);
+        chartIt = new ChartIt('test.csv', 'Global Average Temperature', canvas, type);
         chart = chartIt.createChart();
         drawn = true;
         speech.text = 'Below is the chart you want.';
         option = updateState("chart");
         console.log(option);
         option.setAnswers(speech.text);
-
     }
 
     if (/mean|average|avg/.test(text)) {
+        option = updateState("average");
         if (!drawn) {
-            speech.text = 'You need first to have a chart.'
+            speech.text = 'You need first to have a chart.';
+            option.resetState(states.UNASKED);
         } else {
             // const average = arr => arr.reduce((sume, el) => sume + el, 0) / arr.length;
-            speech.text = 'The average of the data is ' + chartIt.mean.toFixed(2);
+            answers = option.getAnswers();
+            if (answers.length > 0) {
+                if (answers[answers.length - 1].includes(chartIt.mean.toFixed(2))) {
+                    speech.text = 'The average of the data is still ' + chartIt.mean.toFixed(2);
+                };
+            } else {
+                speech.text = 'The average of the data is ' + chartIt.mean.toFixed(2);
+            }
             chartIt.setMeanDataset(chartIt.mean);
-            let chart_with_mean_line = chartIt.createChart();
+            let chart_mean = chartIt.createChart();
         }
-        option = updateState("average");
         console.log(option);
         option.setAnswers(speech.text);
     }
 
     if (/median/.test(text)) {
-        if (!drawn) {
-            speech.text = 'You need first to have a chart.'
-        } else {
-            speech.text = 'The median of the data is ' + chartIt.median.toFixed(2);
-            chartIt.setMedianDataset(chartIt.median);
-            let chart_with_median_line = chartIt.createChart();
-        }
         option = updateState("median");
+        if (!drawn) {
+            speech.text = 'You need first to have a chart.';
+            option.resetState(states.UNASKED);
+        } else {
+            answers = option.getAnswers();
+            if (answers.length > 0) {
+                if (answers[answers.length - 1].includes(chartIt.median.toFixed(2).toString())) {
+                    speech.text = 'The median of the data is still ' + chartIt.median.toFixed(2);
+                }
+            } else {
+                speech.text = 'The median of the data is ' + chartIt.median.toFixed(2);
+            }
+            chartIt.setMedianDataset(chartIt.median);
+            let chart_median = chartIt.createChart();
+        }
         console.log(option);
         option.setAnswers(speech.text);
-        // console.log(option.getAnswers());
     }
 
     if (/start/.test(text)) {
-        ctx.style.visibility = "hidden";
+
+        canvas.style.visibility = "hidden";
+        // let context = canvas.getContext("2d");
+        // context.clearRect(0, 0, canvas.width, canvas.height);
         options.forEach(option => option.resetState());
         speech.text = 'Ok, I just restarted myself';
+        drawn = false;
     }
 
     synth.speak(speech);
     outputBot.textContent = speech.text;
+    console.log(canvas);
+    
 
     setupInterface();
 }
