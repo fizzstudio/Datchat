@@ -3,6 +3,8 @@
 var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
 var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList
 var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent
+let chartIt = undefined;
+let chart = undefined;
 let drawn = false;
 
 const recognition = new SpeechRecognition();
@@ -58,20 +60,12 @@ function synthVoice(text) {
 
     speech.text = "Sorry, I did not understand that.";
 
-    if (!drawn) {
-        stars = Array.from({ length: 5 }, () => Math.floor(Math.random() * 10));
-        media = ['Facebook', 'Twitter', 'Instagram', 'Wechat', 'Tik-Tok'];
-    }
-
     if (/table|chart/.test(text)) {
-        if (drawn) {
-            stars = Array.from({ length: 5 }, () => Math.floor(Math.random() * 10));
-            media = ['Facebook', 'Twitter', 'Instagram', 'Wechat', 'Tip-Top'];
-        }
         if (/pie/.test(text)) { type = 'pie' }
         if (/line/.test(text)) { type = 'line' }
         if (/bar/.test(text)) { type = 'bar' }
-        let chart = createChart(stars, media, 'Social Media Stars', ctx, type);
+        chartIt = new ChartIt('test.csv', 'Global Average Temperature', ctx, type);
+        chart = chartIt.createChart();
         drawn = true;
         speech.text = 'Below is the chart you want.'
     }
@@ -80,8 +74,10 @@ function synthVoice(text) {
         if (!drawn) {
             speech.text = 'You need first to have a chart.'
         } else {
-            const average = arr => arr.reduce((sume, el) => sume + el, 0) / arr.length;
-            speech.text = 'The average of the data is ' + average(stars);
+            // const average = arr => arr.reduce((sume, el) => sume + el, 0) / arr.length;
+            speech.text = 'The average of the data is ' + chartIt.mean.toFixed(2);
+            chartIt.setMeanDataset(chartIt.mean);
+            let chart_with_mean_line = chartIt.createChart();
         }
     }
 
@@ -89,7 +85,9 @@ function synthVoice(text) {
         if (!drawn) {
             speech.text = 'You need first to have a chart.'
         } else {
-            speech.text = 'The median of the data is ' + getMedian(stars);
+            speech.text = 'The median of the data is ' + chartIt.median.toFixed(2);
+            chartIt.setMedianDataset(chartIt.median);
+            let chart_with_median_line = chartIt.createChart();
         }
     }
 
