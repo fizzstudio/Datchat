@@ -70,9 +70,9 @@ const options = [];
 startBot();
 
 function startBot() {
-    // console.log(createTable);
+    // console.log(makeTable);
     document.addEventListener('DOMContentLoaded', () => {
-        options.push(new Option("Please request a chart first", ["chart", "table"], createTable));
+        options.push(new Option("Please request a chart first", ["chart", "table"], makeTable));
         options.push(new Option("You can select the average", ['average', "mean"], makeAvg));
         options.push(new Option("You can select the median", ["median"], makeMedian));
 
@@ -97,7 +97,7 @@ function setupInterface() {
         const speech = new SpeechSynthesisUtterance();
         if (options[i].getState() === states.UNASKED) {
             speech.text = options[i].getContent();
-            // console.log(options[i].getHash());
+            console.log(options[i].getHash());
             // synth.speak(speech);
         } else {
             silence += 1;
@@ -159,7 +159,7 @@ function onSpeechResult() {
 
 function onSpeechEnd() {
     recognition.addEventListener('speechend', () => {
-        // console.log("Speech has ended");
+        console.log("Speech has ended");
         recognition.stop();
     });
 }
@@ -179,45 +179,25 @@ function findKeyword(text) {
             }
         });
     });
-    console.log(selections);
-    selections.forEach((selection) => {
-        selection.callback(text);
-        console.log(selection.callback);
-    });
+    if (selection.length == 0) {
+        console.log(selections);
+        speakResponse("Sorry, I did not understand");
+    } else {
+        selections.forEach((selection) => {
+            selection.callback(text);
+            console.log(selection.callback);
+        });
+    }
 }
 
-function createTable() {
-    let option;
-    let text = '';
-    let canvas = document.getElementById('myChart');
-    let type = 'line';
-
-    chartIt = new ChartIt('test.csv', 'Global Average Temperature', canvas, type);
-    chart = chartIt.createChart();
-    drawn = true;
-    text = 'Below is the chart you want.';
-    option = updateState("chart");
-    speakResponse(text);
-}
-
-function makeAvg() {
-    let text = "average";
-    speakResponse(text);
-}
-
-function makeMedian() {
-    let text = "median";
-    speakResponse(text);
-}
 
 function speakResponse(text) {
     const synth = window.speechSynthesis;
     const speech = new SpeechSynthesisUtterance();
-    let answers;
     speech.text = text;
     synth.speak(speech);
     outputBot.textContent = speech.text;
-    
+
     setupInterface();
 
 }
