@@ -50,6 +50,10 @@ class ChartIt {
         return this.median;
     };
 
+    getTitle() {
+        return this.title;
+    }
+
     setMedianDataset(data) {
         let arr = [];
         for (let i = 0; i < 200; i++) {

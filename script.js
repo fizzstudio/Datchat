@@ -6,6 +6,7 @@ var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEv
 let chartIt = undefined;
 let chart = undefined;
 let drawn = false;
+let ignored = false;
 
 const recognition = new SpeechRecognition();
 var speechRecognitionList = new SpeechGrammarList();
@@ -38,7 +39,7 @@ const Option = class {
             this.state = states.UNIFORM;
         }
         console.log("Option: ", this.state);
-        
+
     }
     getContent() {
         return this.content;
@@ -83,12 +84,10 @@ startBot();
 function startBot() {
     // console.log(makeTable);
     document.addEventListener('DOMContentLoaded', () => {
-        options.push(new Option("Please request a chart first", ["chart", "table"], makeTable, types.OPERATIONAL));
+        options.push(new Option("Please request a chart first", ["chart", "table"], makeTable, types.COMPUTATIONAL));
         options.push(new Option("You can select the average", ['average', "avg", "mean"], makeAvg, types.COMPUTATIONAL));
         options.push(new Option("You can select the median", ["median"], makeMedian, types.COMPUTATIONAL));
-
         options.push(new Option("Options are done. You can start over", ['start'], startover, types.OPERATIONAL));
-        // console.log("startBot start: ", options[1].getState());
 
         setupInterface();
         operate();
@@ -117,18 +116,17 @@ function setupInterface() {
             // synth.speak(speech);
         } else if (options[i].getState() === states.ASKED) {
             silence += 1;
-            
+
         }
     }
     console.log("setupInterface silence: ", silence);
-    if (silence == options.length - 1) {
-        silence = 0;
+    if (silence == options.length - 1 && ignored == false) {
+        ignored = true;
         console.log("You come here ", options);
         const synth = window.speechSynthesis;
         const speech = new SpeechSynthesisUtterance();
         // speech.text = "Options are done. You can start over";
-        speech.text = options[3].getContent()
-        
+        speech.text = options[3].getContent();
 
         synth.speak(speech);
 
@@ -193,12 +191,12 @@ function findKeyword(text) {
                             answer = "still, " + answer;
                         }
                     }
-                    if (answer == "you need first to have a chart.") {    // If answer = "you need...chart", reser option state to UNASKED
+                    if (answer == "you need first to have a chart.") { // If answer = "you need...chart", reser option state to UNASKED
                         option.updateState(states.UNASKED);
                     } else {
-                        option.addAnswer(answer);           // Get rid of meaningless answer "you need...chart"
+                        option.addAnswer(answer); // Get rid of meaningless answer "you need...chart"
                     }
-                    
+
                 } else {
                     options.pop();
                 }

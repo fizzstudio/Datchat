@@ -3,10 +3,10 @@ function makeTable() {
     let canvas = document.getElementById('myChart');
     let type = 'line';
 
-    chartIt = new ChartIt('test.csv', 'Global Average Temperature', canvas, type);
+    chartIt = new ChartIt('test.csv', 'Global Average Temperature from 1880', canvas, type);
     chart = chartIt.createChart();
     drawn = true;
-    response = 'below is the chart you want.';
+    response = 'below is the data of ' + chartIt.getTitle();
     return response;
 }
 
@@ -36,17 +36,17 @@ function makeMedian() {
 }
 
 function startover() {
-    let wrapper = document.getElementById('wrapper');
-    let section = document.getElementById('section');
-    
+    let wrapper = document.getElementById('wrapper');    
     let old_myChart = document.getElementById('myChart');
     let new_myChart = document.createElement('canvas');
     new_myChart.id = "myChart";
+
     wrapper.replaceChild(new_myChart, old_myChart);
 
     options.forEach((option) => {
         if (option.getState() != states.UNIFORM){
             option.resetState();
+            option.addAnswer("Data has been restarted");
         }
     });
     response = 'Ok, I just restarted myself';
