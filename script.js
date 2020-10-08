@@ -21,7 +21,7 @@ const outputBot = document.querySelector('.output-bot');
 
 
 const Option = class {
-    constructor(content, keyword, callback) {
+    constructor(content, keywords, callback) {
         this.content = content;
         this.keywords = keywords;
         this.callback = callback;
@@ -73,7 +73,7 @@ function startBot() {
     // console.log(makeTable);
     document.addEventListener('DOMContentLoaded', () => {
         options.push(new Option("Please request a chart first", ["chart", "table"], makeTable));
-        options.push(new Option("You can select the average", ['average', "mean"], makeAvg));
+        options.push(new Option("You can select the average", ['average', "avg", "mean"], makeAvg));
         options.push(new Option("You can select the median", ["median"], makeMedian));
 
         setupInterface();
@@ -97,7 +97,7 @@ function setupInterface() {
         const speech = new SpeechSynthesisUtterance();
         if (options[i].getState() === states.UNASKED) {
             speech.text = options[i].getContent();
-            console.log(options[i].getKeyword());
+            console.log(options[i].getKeywords());
             // synth.speak(speech);
         } else {
             silence += 1;
@@ -171,7 +171,6 @@ function onSpeechError() {
 }
 
 function findKeyword(text) {
-    const selections = [];
     let answer = 'Sorry';
     options.forEach((option) => {
         option.keywords.forEach((keyword) => {
@@ -187,16 +186,6 @@ function findKeyword(text) {
             }
         });
     });
-    // let answer = '';
-    // if (selections.length == 0) {
-    //     console.log(selections);
-    //     answer = "Sorry";
-    // } else {
-    //     selections.forEach((selection) => {
-    //         answer = selection.callback();
-
-    //     });
-    // }
     speakResponse(answer);
 }
 
