@@ -6,6 +6,7 @@ var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEv
 let chartIt = undefined;
 let chart = undefined;
 let drawn = false;
+let silence = 0;
 
 const recognition = new SpeechRecognition();
 var speechRecognitionList = new SpeechGrammarList();
@@ -65,7 +66,7 @@ const Option = class {
     }
 }
 
-const options = [];
+let options = [];
 
 startBot();
 
@@ -73,8 +74,8 @@ function startBot() {
     // console.log(makeTable);
     document.addEventListener('DOMContentLoaded', () => {
         options.push(new Option("Please request a chart first", ["chart", "table"], makeTable));
-        options.push(new Option("You can select the average", ['average', "avg", "mean"], makeAvg));
-        options.push(new Option("You can select the median", ["median"], makeMedian));
+        // options.push(new Option("You can select the average", ['average', "avg", "mean"], makeAvg));
+        // options.push(new Option("You can select the median", ["median"], makeMedian));
 
         setupInterface();
         operate();
@@ -91,7 +92,6 @@ function operate() {
 }
 
 function setupInterface() {
-    let silence = 0;
     for (let i = 0; i < options.length; i++) {
         const synth = window.speechSynthesis;
         const speech = new SpeechSynthesisUtterance();
@@ -103,11 +103,16 @@ function setupInterface() {
             silence += 1;
         }
     }
-    if (silence == options.length) {
+    if (silence % options.length == 0) {
+        console.log("You come here ", options);
         const synth = window.speechSynthesis;
         const speech = new SpeechSynthesisUtterance();
         speech.text = "Options are done. You can start over";
-        synth.speak(speech);
+        let restart_quest = new Option("Options are done. You can start over", ['start'], startover);
+        restart_quest.updateState(states.UNIFORM);
+        options.push(restart_quest);
+
+        // synth.speak(speech);
 
     }
 }
@@ -175,18 +180,23 @@ function findKeyword(text) {
     options.forEach((option) => {
         option.keywords.forEach((keyword) => {
             if (text.includes(keyword)) {
-                option.updateState(states.ASKED);
-                option.addCount();
+
                 answer = option.callback();
-                let hist_answers = option.getAnswers();
-                if (hist_answers.length > 0) {
-                    if (hist_answers[hist_answers.length - 1].includes(answer)) {
-                        answer = "still, " + answer;
+
+                if (option.getState() !== states.UNIFORM) {
+                    option.updateState(states.ASKED);
+                    option.addCount();
+                    
+                    let hist_answers = option.getAnswers();
+                    if (hist_answers.length > 0) {
+                        if (hist_answers[hist_answers.length - 1].includes(answer)) {
+                            answer = "still, " + answer;
+                        }
                     }
+                    option.addAnswer(answer);
+                } else {
+                    options.pop();
                 }
-
-                option.addAnswer(answer);
-
                 console.log("findKeyword counts: ", option.getCount());
                 console.log("findKeyword option state: ", option.getState());
                 console.log("findKeyword answers: ", option.getAnswers());

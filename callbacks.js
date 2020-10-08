@@ -15,15 +15,7 @@ function makeAvg() {
     if (!drawn) {
         response = 'you need first to have a chart.';
     } else {
-        // const average = arr => arr.reduce((sume, el) => sume + el, 0) / arr.length;
-        // hist_responses = option.getAnswers();
-        // if (hist_responses.length > 0) {
-        //     if (answers[answers.length - 1].includes(chartIt.mean.toFixed(2))) {
-        //         response = 'The average of the data is still ' + chartIt.mean.toFixed(2);
-        //     };
-        // } else {
         response = 'the average of the data is ' + chartIt.mean.toFixed(2);
-        // }
         chartIt.setMeanDataset(chartIt.mean);
         let chart_mean = chartIt.createChart();
     }
@@ -35,14 +27,7 @@ function makeMedian() {
     if (!drawn) {
         response = 'you need first to have a chart.';
     } else {
-        // answers = option.getAnswers();
-        // if (answers.length > 0) {
-        //     if (answers[answers.length - 1].includes(chartIt.median.toFixed(2).toString())) {
-        //         speech.response = 'The median of the data is still ' + chartIt.median.toFixed(2);
-        //     }
-        // } else {
         response = 'the median of the data is ' + chartIt.median.toFixed(2);
-        // }
         chartIt.setMedianDataset(chartIt.median);
         let chart_median = chartIt.createChart();
     }
@@ -50,7 +35,24 @@ function makeMedian() {
     return response;
 }
 
+function startover() {
+    let canvas = document.getElementById('myChart');
+    canvas.style.visibility = "hidden";
+    // let conresponse = canvas.getConresponse("2d");
+    // conresponse.clearRect(0, 0, canvas.width, canvas.height);
+
+    options.forEach((option) => {
+        if (option.getState() != states.UNIFORM){
+            option.resetState();
+        }
+    });
+    response = 'Ok, I just restarted myself';
+    drawn = false;
+    return response;
+}
+
 const states = {
     UNASKED: 0,
-    ASKED: 1
+    ASKED: 1,
+    UNIFORM: 2
 }
