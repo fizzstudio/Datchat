@@ -21,3 +21,8 @@ function makeMedian() {
     let text = "median";
     speakResponse(text);
 }
+
+const states = {
+    UNASKED: 0,
+    ASKED: 1
+}

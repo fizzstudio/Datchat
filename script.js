@@ -19,15 +19,11 @@ recognition.maxAlternatives = 1;
 const outputYou = document.querySelector('.output-you');
 const outputBot = document.querySelector('.output-bot');
 
-const states = {
-    UNASKED: 0,
-    ASKED: 1
-}
 
 const Option = class {
-    constructor(content, hashtag, callback) {
+    constructor(content, keyword, callback) {
         this.content = content;
-        this.hashtag = hashtag;
+        this.keyword = keyword;
         this.callback = callback;
         this.answers = [];
         this.state = states.UNASKED;
@@ -56,8 +52,8 @@ const Option = class {
         this.state = states.UNASKED;
     }
 
-    getHash() {
-        return this.hashtag;
+    getKeyword() {
+        return this.keyword;
     }
 }
 
@@ -93,7 +89,7 @@ function setupInterface() {
         const speech = new SpeechSynthesisUtterance();
         if (options[i].getState() === states.UNASKED) {
             speech.text = options[i].getContent();
-            console.log(options[i].getHash());
+            console.log(options[i].getKeyword());
             // synth.speak(speech);
         } else {
             silence += 1;
@@ -113,7 +109,7 @@ function updateState(text) {
     let option;
     for (let i = 0; i < options.length; i++) {
         option = options[i];
-        if (option.getHash().includes(text)) {
+        if (option.getKeyword().includes(text)) {
             switch (option.getState()) {
                 case states.UNASKED:
                     option.updateState(states.ASKED);
@@ -169,7 +165,7 @@ function onSpeechError() {
 function findKeyword(text) {
     const selections = [];
     options.forEach((option) => {
-        option.hashtag.forEach((keyword) => {
+        option.keyword.forEach((keyword) => {
             if (text.includes(keyword)) {
                 selections.push(option);
             }
