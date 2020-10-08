@@ -19,15 +19,26 @@ recognition.maxAlternatives = 1;
 const outputYou = document.querySelector('.output-you');
 const outputBot = document.querySelector('.output-bot');
 
+const types = {
+    COMPUTATIONAL: 0,
+    OPERATIONAL: 1
+}
 
 const Option = class {
-    constructor(content, keywords, callback) {
+    constructor(content, keywords, callback, type) {
         this.content = content;
         this.keywords = keywords;
         this.callback = callback;
+        this.type = type;
         this.occurrence = 0;
         this.answers = [];
-        this.state = states.UNASKED;
+        if (this.type == types.COMPUTATIONAL) {
+            this.state = states.UNASKED;
+        } else if (this.type == types.OPERATIONAL) {
+            this.state = states.UNIFORM;
+        }
+        console.log("Option: ", this.state);
+        
     }
     getContent() {
         return this.content;
@@ -72,9 +83,12 @@ startBot();
 function startBot() {
     // console.log(makeTable);
     document.addEventListener('DOMContentLoaded', () => {
-        options.push(new Option("Please request a chart first", ["chart", "table"], makeTable));
-        options.push(new Option("You can select the average", ['average', "avg", "mean"], makeAvg));
-        options.push(new Option("You can select the median", ["median"], makeMedian));
+        options.push(new Option("Please request a chart first", ["chart", "table"], makeTable, types.OPERATIONAL));
+        options.push(new Option("You can select the average", ['average', "avg", "mean"], makeAvg, types.COMPUTATIONAL));
+        options.push(new Option("You can select the median", ["median"], makeMedian, types.COMPUTATIONAL));
+
+        options.push(new Option("Options are done. You can start over", ['start'], startover, types.OPERATIONAL));
+        // console.log("startBot start: ", options[1].getState());
 
         setupInterface();
         operate();
@@ -107,15 +121,14 @@ function setupInterface() {
         }
     }
     console.log("setupInterface silence: ", silence);
-    if (silence == options.length) {
+    if (silence == options.length - 1) {
         silence = 0;
         console.log("You come here ", options);
         const synth = window.speechSynthesis;
         const speech = new SpeechSynthesisUtterance();
-        speech.text = "Options are done. You can start over";
-        let restart_quest = new Option("Options are done. You can start over", ['start'], startover);
-        restart_quest.updateState(states.UNIFORM);
-        options.push(restart_quest);
+        // speech.text = "Options are done. You can start over";
+        speech.text = options[3].getContent()
+        
 
         synth.speak(speech);
 
@@ -180,14 +193,14 @@ function findKeyword(text) {
                             answer = "still, " + answer;
                         }
                     }
-                    option.addAnswer(answer);
+                    if (answer == "you need first to have a chart.") {    // If answer = "you need...chart", reser option state to UNASKED
+                        option.updateState(states.UNASKED);
+                    } else {
+                        option.addAnswer(answer);           // Get rid of meaningless answer "you need...chart"
+                    }
+                    
                 } else {
                     options.pop();
-                }
-
-                
-                if (answer == "you need first to have a chart.") {
-                    option.updateState(states.UNASKED);
                 }
 
                 console.log("findKeyword counts: ", option.getCount());
