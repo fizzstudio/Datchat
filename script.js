@@ -103,10 +103,10 @@ function setupInterface() {
             // synth.speak(speech);
         } else if (options[i].getState() === states.ASKED) {
             silence += 1;
-            console.log("setupInterface silence: ", silence);
+            
         }
     }
-
+    console.log("setupInterface silence: ", silence);
     if (silence == options.length) {
         silence = 0;
         console.log("You come here ", options);
@@ -184,6 +184,12 @@ function findKeyword(text) {
                 } else {
                     options.pop();
                 }
+
+                
+                if (answer == "you need first to have a chart.") {
+                    option.updateState(states.UNASKED);
+                }
+
                 console.log("findKeyword counts: ", option.getCount());
                 console.log("findKeyword option state: ", option.getState());
                 console.log("findKeyword answers: ", option.getAnswers());
