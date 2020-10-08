@@ -123,23 +123,6 @@ function setupInterface() {
 }
 
 
-function updateState(text) {
-    let option;
-    for (let i = 0; i < options.length; i++) {
-        option = options[i];
-        if (option.getKeywords().includes(text)) {
-            switch (option.getState()) {
-                case states.UNASKED:
-                    option.updateState(states.ASKED);
-                    return option;
-                case states.ASKED:
-                    option.updateState(states.RECALLED);
-                    return option;
-            }
-        }
-    }
-}
-
 function onClick() {
     document.querySelector('button').addEventListener('click', () => {
         recognition.start();
