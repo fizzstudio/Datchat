@@ -178,6 +178,13 @@ function findKeyword(text) {
                 option.updateState(states.ASKED);
                 option.addCount();
                 answer = option.callback();
+                let hist_answers = option.getAnswers();
+                if (hist_answers.length > 0) {
+                    if (hist_answers[hist_answers.length - 1].includes(answer)) {
+                        answer = "still, " + answer;
+                    }
+                }
+
                 option.addAnswer(answer);
 
                 console.log("findKeyword counts: ", option.getCount());
@@ -195,7 +202,7 @@ function speakResponse(text) {
     const speech = new SpeechSynthesisUtterance();
     speech.text = text;
     synth.speak(speech);
-    outputBot.textContent = speech.text;
+    outputBot.textContent = speech.text.charAt(0).toUpperCase() + speech.text.slice(1);;
 
     setupInterface();
 
@@ -264,7 +271,7 @@ function synthVoice(text) {
             answers = option.getAnswers();
             if (answers.length > 0) {
                 if (answers[answers.length - 1].includes(chartIt.median.toFixed(2).toString())) {
-                    speech.text = 'The median of the data is still ' + chartIt.median.toFixed(2);
+                    speech.text = ['The median of the data is still ', chartIt.median.toFixed(2)];
                 }
             } else {
                 speech.text = 'The median of the data is ' + chartIt.median.toFixed(2);
