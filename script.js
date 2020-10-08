@@ -21,20 +21,16 @@ const outputBot = document.querySelector('.output-bot');
 
 const states = {
     UNASKED: 0,
-    ASKED: 1,
-    RECALLED: 2
-
+    ASKED: 1
 }
 
 const Option = class {
     constructor(content, hashtag, callback) {
-        // console.log(callback);
         this.content = content;
         this.hashtag = hashtag;
         this.callback = callback;
         this.answers = [];
         this.state = states.UNASKED;
-        // console.log(this.callback);
     }
     getContent() {
         return this.content;
@@ -180,12 +176,11 @@ function findKeyword(text) {
         });
     });
     if (selections.length == 0) {
-        console.log("findKeyword", selections);
+        console.log(selections);
         speakResponse("Sorry, I did not understand that");
     } else {
         selections.forEach((selection) => {
             selection.callback(text);
-            console.log(selections.callback);
         });
     }
 }
