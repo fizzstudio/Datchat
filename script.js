@@ -23,9 +23,9 @@ const outputBot = document.querySelector('.output-bot');
 const Option = class {
     constructor(content, keyword, callback) {
         this.content = content;
-        this.keyword = keyword;
+        this.keywords = keywords;
         this.callback = callback;
-        this.frequency = 0;
+        this.occurrence = 0;
         this.answers = [];
         this.state = states.UNASKED;
     }
@@ -33,7 +33,7 @@ const Option = class {
         return this.content;
     }
 
-    setAnswers(answer) {
+    addAnswer(answer) {
         this.answers.push(answer);
     }
 
@@ -53,15 +53,15 @@ const Option = class {
         this.state = states.UNASKED;
     }
 
-    getKeyword() {
-        return this.keyword;
+    getKeywords() {
+        return this.keywords;
     }
 
     addCount() {
-        this.frequency += 1;
+        this.occurrence += 1;
     }
     getCount() {
-        return this.frequency;
+        return this.occurrence;
     }
 }
 
@@ -73,7 +73,6 @@ function startBot() {
     // console.log(makeTable);
     document.addEventListener('DOMContentLoaded', () => {
         options.push(new Option("Please request a chart first", ["chart", "table"], makeTable));
-        console.log("startBot: ", options[0].getState());
         options.push(new Option("You can select the average", ['average', "mean"], makeAvg));
         options.push(new Option("You can select the median", ["median"], makeMedian));
 
@@ -118,7 +117,7 @@ function updateState(text) {
     let option;
     for (let i = 0; i < options.length; i++) {
         option = options[i];
-        if (option.getKeyword().includes(text)) {
+        if (option.getKeywords().includes(text)) {
             switch (option.getState()) {
                 case states.UNASKED:
                     option.updateState(states.ASKED);
@@ -173,28 +172,32 @@ function onSpeechError() {
 
 function findKeyword(text) {
     const selections = [];
+    let answer = 'Sorry';
     options.forEach((option) => {
-        option.keyword.forEach((keyword) => {
+        option.keywords.forEach((keyword) => {
             if (text.includes(keyword)) {
                 option.updateState(states.ASKED);
                 option.addCount();
+                answer = option.callback();
+                option.addAnswer(answer);
+
                 console.log("findKeyword counts: ", option.getCount());
                 console.log("findKeyword option state: ", option.getState());
-                selections.push(option);
+                console.log("findKeyword answers: ", option.getAnswers());
             }
         });
     });
-    let answer = '';
-    if (selections.length == 0) {
-        console.log(selections);
-        answer = "Sorry";
-        speakResponse(answer);
-    } else {
-        selections.forEach((selection) => {
-            answer = selection.callback();
-            speakResponse(answer);
-        });
-    }
+    // let answer = '';
+    // if (selections.length == 0) {
+    //     console.log(selections);
+    //     answer = "Sorry";
+    // } else {
+    //     selections.forEach((selection) => {
+    //         answer = selection.callback();
+
+    //     });
+    // }
+    speakResponse(answer);
 }
 
 
@@ -238,7 +241,7 @@ function synthVoice(text) {
         speech.text = 'Below is the chart you want.';
         option = updateState("chart");
         // console.log(option);
-        option.setAnswers(speech.text);
+        option.addAnswer(speech.text);
     }
 
     if (/mean|average|avg/.test(text)) {
@@ -260,7 +263,7 @@ function synthVoice(text) {
             let chart_mean = chartIt.createChart();
         }
         // console.log(option);
-        option.setAnswers(speech.text);
+        option.addAnswer(speech.text);
     }
 
     if (/median/.test(text)) {
@@ -281,7 +284,7 @@ function synthVoice(text) {
             let chart_median = chartIt.createChart();
         }
         // console.log(option);
-        option.setAnswers(speech.text);
+        option.addAnswer(speech.text);
     }
 
     if (/start/.test(text)) {
