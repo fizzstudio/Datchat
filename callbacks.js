@@ -36,10 +36,13 @@ function makeMedian() {
 }
 
 function startover() {
-    let canvas = document.getElementById('myChart');
-    canvas.style.visibility = "hidden";
-    // let conresponse = canvas.getConresponse("2d");
-    // conresponse.clearRect(0, 0, canvas.width, canvas.height);
+    let wrapper = document.getElementById('wrapper');
+    let section = document.getElementById('section');
+    
+    let old_myChart = document.getElementById('myChart');
+    let new_myChart = document.createElement('canvas');
+    new_myChart.id = "myChart";
+    wrapper.replaceChild(new_myChart, old_myChart);
 
     options.forEach((option) => {
         if (option.getState() != states.UNIFORM){

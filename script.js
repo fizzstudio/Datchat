@@ -74,7 +74,7 @@ function startBot() {
     // console.log(makeTable);
     document.addEventListener('DOMContentLoaded', () => {
         options.push(new Option("Please request a chart first", ["chart", "table"], makeTable));
-        // options.push(new Option("You can select the average", ['average', "avg", "mean"], makeAvg));
+        options.push(new Option("You can select the average", ['average', "avg", "mean"], makeAvg));
         // options.push(new Option("You can select the median", ["median"], makeMedian));
 
         setupInterface();
@@ -98,7 +98,7 @@ function setupInterface() {
         if (options[i].getState() === states.UNASKED) {
             speech.text = options[i].getContent();
             console.log(options[i].getKeywords());
-            // synth.speak(speech);
+            synth.speak(speech);
         } else {
             silence += 1;
         }
@@ -112,7 +112,7 @@ function setupInterface() {
         restart_quest.updateState(states.UNIFORM);
         options.push(restart_quest);
 
-        // synth.speak(speech);
+        synth.speak(speech);
 
     }
 }
