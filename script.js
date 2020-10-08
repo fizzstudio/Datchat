@@ -179,13 +179,13 @@ function findKeyword(text) {
             }
         });
     });
-    if (selection.length == 0) {
-        console.log(selections);
-        speakResponse("Sorry, I did not understand");
+    if (selections.length == 0) {
+        console.log("findKeyword", selections);
+        speakResponse("Sorry, I did not understand that");
     } else {
         selections.forEach((selection) => {
             selection.callback(text);
-            console.log(selection.callback);
+            console.log(selections.callback);
         });
     }
 }
