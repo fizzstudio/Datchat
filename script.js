@@ -25,6 +25,7 @@ const Option = class {
         this.content = content;
         this.keyword = keyword;
         this.callback = callback;
+        this.frequency = 0;
         this.answers = [];
         this.state = states.UNASKED;
     }
@@ -55,6 +56,13 @@ const Option = class {
     getKeyword() {
         return this.keyword;
     }
+
+    addCount() {
+        this.frequency += 1;
+    }
+    getCount() {
+        return this.frequency;
+    }
 }
 
 const options = [];
@@ -65,6 +73,7 @@ function startBot() {
     // console.log(makeTable);
     document.addEventListener('DOMContentLoaded', () => {
         options.push(new Option("Please request a chart first", ["chart", "table"], makeTable));
+        console.log("startBot: ", options[0].getState());
         options.push(new Option("You can select the average", ['average', "mean"], makeAvg));
         options.push(new Option("You can select the median", ["median"], makeMedian));
 
@@ -167,16 +176,23 @@ function findKeyword(text) {
     options.forEach((option) => {
         option.keyword.forEach((keyword) => {
             if (text.includes(keyword)) {
+                option.updateState(states.ASKED);
+                option.addCount();
+                console.log("findKeyword counts: ", option.getCount());
+                console.log("findKeyword option state: ", option.getState());
                 selections.push(option);
             }
         });
     });
+    let answer = '';
     if (selections.length == 0) {
         console.log(selections);
-        speakResponse("Sorry, I did not understand that");
+        answer = "Sorry";
+        speakResponse(answer);
     } else {
         selections.forEach((selection) => {
-            selection.callback(text);
+            answer = selection.callback();
+            speakResponse(answer);
         });
     }
 }

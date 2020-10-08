@@ -1,5 +1,4 @@
 function makeTable() {
-    let option;
     let text = '';
     let canvas = document.getElementById('myChart');
     let type = 'line';
@@ -8,18 +7,18 @@ function makeTable() {
     chart = chartIt.createChart();
     drawn = true;
     text = 'Below is the chart you want.';
-    option = updateState("chart");
-    speakResponse(text);
+    return text;
+    
 }
 
 function makeAvg() {
     let text = "average";
-    speakResponse(text);
+    return text;
 }
 
 function makeMedian() {
     let text = "median";
-    speakResponse(text);
+    return text;
 }
 
 const states = {
