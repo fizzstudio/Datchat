@@ -20,62 +20,8 @@ recognition.maxAlternatives = 1;
 const outputYou = document.querySelector('.output-you');
 const outputBot = document.querySelector('.output-bot');
 
-const types = {
-    COMPUTATIONAL: 0,
-    OPERATIONAL: 1
-}
 
-const Option = class {
-    constructor(content, keywords, callback, type) {
-        this.content = content;
-        this.keywords = keywords;
-        this.callback = callback;
-        this.type = type;
-        this.occurrence = 0;
-        this.answers = [];
-        if (this.type == types.COMPUTATIONAL) {
-            this.state = states.UNASKED;
-        } else if (this.type == types.OPERATIONAL) {
-            this.state = states.UNIFORM;
-        }
-        console.log("Option: ", this.state);
 
-    }
-    getContent() {
-        return this.content;
-    }
-
-    addAnswer(answer) {
-        this.answers.push(answer);
-    }
-
-    getAnswers() {
-        return this.answers;
-    }
-
-    getState() {
-        return this.state;
-    }
-
-    updateState(state) {
-        this.state = state;
-    }
-
-    resetState() {
-        this.state = states.UNASKED;
-    }
-
-    getKeywords() {
-        return this.keywords;
-    }
-
-    addCount() {
-        this.occurrence += 1;
-    }
-    getCount() {
-        return this.occurrence;
-    }
-}
 
 let options = [];
 
@@ -83,10 +29,10 @@ startBot();
 
 function startBot() {
     document.addEventListener('DOMContentLoaded', () => {
-        options.push(new Option("Please request a chart first", ["chart", "table"], makeTable, types.COMPUTATIONAL));
-        options.push(new Option("You can select the average", ['average', "avg", "mean"], makeAvg, types.COMPUTATIONAL));
-        options.push(new Option("You can select the median", ["median"], makeMedian, types.COMPUTATIONAL));
-        options.push(new Option("Options are done. You can start over", ['start'], startover, types.OPERATIONAL));
+        options.push(new Option("Please request a chart first", ["chart", "table"], makeTable, Option.Types.COMPUTATIONAL));
+        options.push(new Option("You can select the average", ['average', "avg", "mean"], makeAvg, Option.Types.COMPUTATIONAL));
+        options.push(new Option("You can select the median", ["median"], makeMedian, Option.Types.COMPUTATIONAL));
+        options.push(new Option("Options are done. You can start over", ['start'], startover, Option.Types.OPERATIONAL));
 
         setupInterface();
         operate();
