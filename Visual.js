@@ -28,10 +28,9 @@ class Visual {
                 labels: data.xs,
                 datasets: this.datasets,
             },
-        });
+        })
         this.setMedian(this.ys);
         this.setMean(this.ys);
-        // this.myChart.update();
         return myChart;
     };
 
@@ -43,7 +42,7 @@ class Visual {
         this.median = cal_median(arr);
     };
 
-    setMean(arr) {
+    setMean(arr){
         this.mean = cal_mean(arr);
     }
 
@@ -101,10 +100,7 @@ async function getData(addr) {
         ys.push(parseFloat(temp) + 14);
         // console.log(year, temp);
     });
-    return {
-        xs,
-        ys
-    };
+    return { xs, ys };
 }
 
 let cal_median = function (array) {
@@ -117,10 +113,11 @@ let cal_median = function (array) {
     }
 }
 
-let cal_mean = function (array) {
+let cal_mean = function(array){
     let sum = 0;
-    for (let i = 0; i < array.length; i++) {
+    for (let i = 0; i < array.length; i++){
         sum += array[i];
     }
-    return sum / array.length;
+    return sum/array.length;
 }
+

@@ -65,13 +65,12 @@ function setupInterface() {
         speech.text = options[3].getContent();
 
         synth.speak(speech);
-
     }
 }
 
 function findKeyword(text) {
     let negated = false;
-    let answer = 'Sorry';
+    let response = 'Sorry';
 
     negation_markers.forEach((negator) => {
         if (text.includes(negator)) {
@@ -83,41 +82,41 @@ function findKeyword(text) {
         option.keywords.forEach((keyword) => {
             if (text.includes(keyword)) {
                 if (!negated) {
-                    answer = resultAnswer(option);
+                    response = resultAnswer(option);
                 } else {
-                    answer = 'ok, no ' + keyword + '.';
+                    response = 'ok, no ' + keyword + '.';
                 }
-
-                if (answer == "you need first to have a chart.") { // If answer = "you need...chart", reset option state to UNASKED
+                if (response == "you need first to have a chart.") { // If answer = "you need...chart", reset option state to UNASKED
                     option.updateState(states.UNASKED);
                 } else {
-                    option.addAnswer(answer); // Get rid of meaningless answer "you need...chart"
+                    option.addAnswer(response); // Get rid of meaningless answer "you need...chart"
                 }
                 console.log("findKeyword counts: ", option.getCount());
                 console.log("findKeyword option state: ", option.getState());
                 console.log("findKeyword answers: ", option.getAnswers());
             }
         });
+
     });
-    speakResponse(answer);
+    speakResponse(response);
 }
 
 function resultAnswer(option) {
-    let answer = option.callback();
+    let response = option.callback();
     if (option.getState() !== states.UNIFORM) {
         option.updateState(states.ASKED);
         option.addCount();
-        if (compareAnswers(answer, option.getAnswers())) {
-            answer = "still, " + answer;
+        if (compareAnswers(response, option.getAnswers())) {
+            response = "still, " + response;
         }
     }
-    return answer;
+    return response;
 
 }
 
-function compareAnswers(answer, history) {
+function compareAnswers(response, history) {
     if (history.length > 0) {
-        if (history[history.length - 1].includes(answer)) {
+        if (history[history.length - 1].includes(response)) {
             return true; // current answer = last answer
         }
     }
