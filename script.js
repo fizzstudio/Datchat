@@ -21,9 +21,8 @@ const outputYou = document.querySelector('.output-you');
 const outputBot = document.querySelector('.output-bot');
 
 
-
-
 let options = [];
+let negation_markers = ["n't", "not", "no", "never"];
 
 startBot();
 
@@ -37,16 +36,9 @@ function startBot() {
         setupInterface();
         operate();
     });
-
 }
 
-function operate() {
-    onClick();
-    onSpeechStart()
-    onSpeechResult();
-    onSpeechEnd();
-    onSpeechError();
-}
+
 
 function setupInterface() {
     let silence = 0;
@@ -77,6 +69,79 @@ function setupInterface() {
     }
 }
 
+function findKeyword(text) {
+    let negated = false;
+    let answer = 'Sorry';
+
+    negation_markers.forEach((negator) => {
+        if (text.includes(negator)) {
+            negated = true;
+        }
+    });
+
+    options.forEach((option) => {
+        option.keywords.forEach((keyword) => {
+            if (text.includes(keyword)) {
+                if (!negated) {
+                    answer = resultAnswer(option);
+                } else {
+                    answer = 'ok, no ' + keyword + '.';
+                }
+
+                if (answer == "you need first to have a chart.") { // If answer = "you need...chart", reset option state to UNASKED
+                    option.updateState(states.UNASKED);
+                } else {
+                    option.addAnswer(answer); // Get rid of meaningless answer "you need...chart"
+                }
+                console.log("findKeyword counts: ", option.getCount());
+                console.log("findKeyword option state: ", option.getState());
+                console.log("findKeyword answers: ", option.getAnswers());
+            }
+        });
+    });
+    speakResponse(answer);
+}
+
+function resultAnswer(option) {
+    let answer = option.callback();
+    if (option.getState() !== states.UNIFORM) {
+        option.updateState(states.ASKED);
+        option.addCount();
+        if (compareAnswers(answer, option.getAnswers())) {
+            answer = "still, " + answer;
+        }
+    }
+    return answer;
+
+}
+
+function compareAnswers(answer, history) {
+    if (history.length > 0) {
+        if (history[history.length - 1].includes(answer)) {
+            return true; // current answer = last answer
+        }
+    }
+    return false;
+}
+
+function speakResponse(text) {
+    const synth = window.speechSynthesis;
+    const speech = new SpeechSynthesisUtterance();
+    speech.text = text;
+    synth.speak(speech);
+    outputBot.textContent = speech.text.charAt(0).toUpperCase() + speech.text.slice(1);;
+
+    setupInterface();
+
+}
+
+function operate() {
+    onClick();
+    onSpeechStart()
+    onSpeechResult();
+    onSpeechEnd();
+    onSpeechError();
+}
 
 function onClick() {
     document.querySelector('button').addEventListener('click', () => {
@@ -115,58 +180,4 @@ function onSpeechError() {
     recognition.addEventListener('error', (e) => {
         outputBot.textContent = 'Error: ' + e.error;
     });
-}
-
-function findKeyword(text) {
-    let answer = 'Sorry';
-    options.forEach((option) => {
-        option.keywords.forEach((keyword) => {
-            if (text.includes(keyword)) {
-                answer = finalAnswer(option);
-
-                if (answer == "you need first to have a chart.") { // If answer = "you need...chart", reset option state to UNASKED
-                    option.updateState(states.UNASKED);
-                } else {
-                    option.addAnswer(answer); // Get rid of meaningless answer "you need...chart"
-                }
-                console.log("findKeyword counts: ", option.getCount());
-                console.log("findKeyword option state: ", option.getState());
-                console.log("findKeyword answers: ", option.getAnswers());
-            }
-        });
-    });
-    speakResponse(answer);
-}
-
-function finalAnswer(option) {
-    let answer = option.callback();
-    if (option.getState() !== states.UNIFORM) {
-        option.updateState(states.ASKED);
-        option.addCount();
-        if (compareAnswers(answer, option.getAnswers())) {
-            answer = "still, " + answer;
-        }
-    }
-    return answer;
-
-}
-
-function compareAnswers(answer, history) {
-    if (history.length > 0) {
-        if (history[history.length - 1].includes(answer)) {
-            return true; // current answer = last answer
-        }
-    }
-    return false;
-}
-
-function speakResponse(text) {
-    const synth = window.speechSynthesis;
-    const speech = new SpeechSynthesisUtterance();
-    speech.text = text;
-    synth.speak(speech);
-    outputBot.textContent = speech.text.charAt(0).toUpperCase() + speech.text.slice(1);;
-
-    setupInterface();
-
 }
