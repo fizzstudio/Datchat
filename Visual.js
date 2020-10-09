@@ -7,12 +7,15 @@ class Visual {
         this.median = 0;
         this.mean = 0;
         this.ys = [];
+        this.xs = [];
         this.datasets = [];
+        this.myChart;
+
     }
 
     createChart = async function () {
         let data = await getData(this.addr);
-        this.setData(data.ys);
+        this.setY(data.ys);
         this.datasets[0] = {
             label: this.title,
             data: this.ys,
@@ -29,20 +32,32 @@ class Visual {
                 datasets: this.datasets,
             },
         })
+        this.setChart(myChart);
+        this.myChart = myChart;
+
+        console.log("Visual: ", this.myChart);
         this.setMedian(this.ys);
         this.setMean(this.ys);
         return myChart;
     };
 
-    setData(arr) {
+    setChart(myChart) {
+        this.myChart = myChart;
+    }
+
+    setY(arr) {
         this.ys = arr;
+    };
+
+    setX(arr) {
+        this.xs = arr;
     };
 
     setMedian(arr) {
         this.median = cal_median(arr);
     };
 
-    setMean(arr){
+    setMean(arr) {
         this.mean = cal_mean(arr);
     }
 
@@ -62,8 +77,8 @@ class Visual {
         this.datasets[1] = {
             label: 'Median',
             data: arr,
-            backgroundColor: "black",
-            borderColor: "black",
+            backgroundColor: "brown",
+            borderColor: "brown",
             borderWidth: 1,
             fill: false
         };
@@ -74,14 +89,14 @@ class Visual {
         for (let i = 0; i < 200; i++) {
             arr.push(data);
         }
-        this.datasets[1] = {
+        this.datasets[1] = ({
             label: 'Mean',
             data: arr,
-            backgroundColor: "black",
-            borderColor: "black",
+            backgroundColor: "rice",
+            borderColor: "rice",
             borderWidth: 1,
             fill: false
-        };
+        });
     }
 }
 
@@ -100,7 +115,10 @@ async function getData(addr) {
         ys.push(parseFloat(temp) + 14);
         // console.log(year, temp);
     });
-    return { xs, ys };
+    return {
+        xs,
+        ys
+    };
 }
 
 let cal_median = function (array) {
@@ -113,11 +131,10 @@ let cal_median = function (array) {
     }
 }
 
-let cal_mean = function(array){
+let cal_mean = function (array) {
     let sum = 0;
-    for (let i = 0; i < array.length; i++){
+    for (let i = 0; i < array.length; i++) {
         sum += array[i];
     }
-    return sum/array.length;
+    return sum / array.length;
 }
-

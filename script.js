@@ -22,16 +22,17 @@ const outputBot = document.querySelector('.output-bot');
 
 
 let options = [];
+
 let negation_markers = ["n't", "not", "no", "never"];
 
 startBot();
 
 function startBot() {
     document.addEventListener('DOMContentLoaded', () => {
-        options.push(new Option("Please request a chart first", ["chart", "table"], makeTable, Option.Types.COMPUTATIONAL));
-        options.push(new Option("You can select the average", ['average', "avg", "mean"], makeAvg, Option.Types.COMPUTATIONAL));
-        options.push(new Option("You can select the median", ["median"], makeMedian, Option.Types.COMPUTATIONAL));
-        options.push(new Option("Options are done. You can start over", ['start'], startover, Option.Types.OPERATIONAL));
+        options.push(new Option("You can request a chart first", ["chart", "table"], makeTable, Option.Types.COMPUTATIONAL));
+        options.push(new Option("You can request the average", ['average', "avg", "mean"], makeAvg, Option.Types.COMPUTATIONAL));
+        options.push(new Option("You can request the median", ["median"], makeMedian, Option.Types.COMPUTATIONAL));
+        options.push(new Option("Options are done. You can start over", ['restart'], startover, Option.Types.OPERATIONAL));
 
         setupInterface();
         operate();
@@ -39,23 +40,41 @@ function startBot() {
 }
 
 
-
 function setupInterface() {
     let silence = 0;
+    let speech_pool = [];
     for (let i = 0; i < options.length; i++) {
         const synth = window.speechSynthesis;
         const speech = new SpeechSynthesisUtterance();
 
         if (options[i].getState() === states.UNASKED) {
-            speech.text = options[i].getContent();
+            speech_pool.push(options[i]);
+            // speech.text = options[i].getContent();
             console.log("setUpInterface", options[i].getKeywords());
             console.log("setUpInterface option state", options[i].getState());
+            console.log("setUpInterface speech_pool: ", speech_pool);
             // synth.speak(speech);
         } else if (options[i].getState() === states.ASKED) {
             silence += 1;
-
         }
+
     }
+    const synth = window.speechSynthesis;
+    const speech = new SpeechSynthesisUtterance();
+    if (speech_pool.length != 0) {
+        let text = speech_pool[0].getContent();
+        for (let i = 1; i < speech_pool.length - 1; i++) {
+            text = text + ", the " + speech_pool[i].getKeywords()[0];
+        }
+        if (speech_pool.length > 1) {
+            text = text + " and the " + speech_pool[speech_pool.length-1].getKeywords()[0];
+        }
+        speech.text = text;
+        synth.speak(speech);
+    }
+
+
+
     console.log("setupInterface silence: ", silence);
     if (silence == options.length - 1 && ignored == false) {
         ignored = true;
@@ -69,9 +88,8 @@ function setupInterface() {
 }
 
 function findKeyword(text) {
-    let negated = false;
     let response = 'Sorry';
-
+    let negated = false;
     negation_markers.forEach((negator) => {
         if (text.includes(negator)) {
             negated = true;
@@ -111,7 +129,6 @@ function resultAnswer(option) {
         }
     }
     return response;
-
 }
 
 function compareAnswers(response, history) {
