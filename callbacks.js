@@ -5,6 +5,7 @@ function makeTable() {
 
     visual = new Visual('test.csv', 'Global Average Temperature from 1880', canvas, type);
     chart = visual.createChart();
+
     drawn = true;
     response = 'below is the data of ' + visual.getTitle();
     return response;
