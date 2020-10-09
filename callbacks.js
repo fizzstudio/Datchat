@@ -3,10 +3,10 @@ function makeTable() {
     let canvas = document.getElementById('myChart');
     let type = 'line';
 
-    chartIt = new ChartIt('test.csv', 'Global Average Temperature from 1880', canvas, type);
-    chart = chartIt.createChart();
+    visual = new Visual('test.csv', 'Global Average Temperature from 1880', canvas, type);
+    chart = visual.createChart();
     drawn = true;
-    response = 'below is the data of ' + chartIt.getTitle();
+    response = 'below is the data of ' + visual.getTitle();
     return response;
 }
 
@@ -15,9 +15,9 @@ function makeAvg() {
     if (!drawn) {
         response = 'you need first to have a chart.';
     } else {
-        response = 'the average of the data is ' + chartIt.mean.toFixed(2);
-        chartIt.setMeanDataset(chartIt.mean);
-        let chart_mean = chartIt.createChart();
+        response = 'the average of the data is ' + visual.mean.toFixed(2);
+        visual.setMeanDataset(visual.mean);
+        let chart_mean = visual.createChart();
     }
     return response;
 }
@@ -27,9 +27,9 @@ function makeMedian() {
     if (!drawn) {
         response = 'you need first to have a chart.';
     } else {
-        response = 'the median of the data is ' + chartIt.median.toFixed(2);
-        chartIt.setMedianDataset(chartIt.median);
-        let chart_median = chartIt.createChart();
+        response = 'the median of the data is ' + visual.median.toFixed(2);
+        visual.setMedianDataset(visual.median);
+        let chart_median = visual.createChart();
     }
 
     return response;

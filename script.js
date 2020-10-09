@@ -3,7 +3,7 @@
 var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
 var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList
 var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent
-let chartIt = undefined;
+let visual = undefined;
 let chart = undefined;
 let drawn = false;
 let ignored = false;
@@ -82,7 +82,6 @@ let options = [];
 startBot();
 
 function startBot() {
-    // console.log(makeTable);
     document.addEventListener('DOMContentLoaded', () => {
         options.push(new Option("Please request a chart first", ["chart", "table"], makeTable, types.COMPUTATIONAL));
         options.push(new Option("You can select the average", ['average', "avg", "mean"], makeAvg, types.COMPUTATIONAL));
@@ -125,7 +124,6 @@ function setupInterface() {
         console.log("You come here ", options);
         const synth = window.speechSynthesis;
         const speech = new SpeechSynthesisUtterance();
-        // speech.text = "Options are done. You can start over";
         speech.text = options[3].getContent();
 
         synth.speak(speech);
@@ -178,29 +176,13 @@ function findKeyword(text) {
     options.forEach((option) => {
         option.keywords.forEach((keyword) => {
             if (text.includes(keyword)) {
+                answer = finalAnswer(option);
 
-                answer = option.callback();
-
-                if (option.getState() !== states.UNIFORM) {
-                    option.updateState(states.ASKED);
-                    option.addCount();
-
-                    let hist_answers = option.getAnswers();
-                    if (hist_answers.length > 0) {
-                        if (hist_answers[hist_answers.length - 1].includes(answer)) {
-                            answer = "still, " + answer;
-                        }
-                    }
-                    if (answer == "you need first to have a chart.") { // If answer = "you need...chart", reser option state to UNASKED
-                        option.updateState(states.UNASKED);
-                    } else {
-                        option.addAnswer(answer); // Get rid of meaningless answer "you need...chart"
-                    }
-
+                if (answer == "you need first to have a chart.") { // If answer = "you need...chart", reset option state to UNASKED
+                    option.updateState(states.UNASKED);
                 } else {
-                    options.pop();
+                    option.addAnswer(answer); // Get rid of meaningless answer "you need...chart"
                 }
-
                 console.log("findKeyword counts: ", option.getCount());
                 console.log("findKeyword option state: ", option.getState());
                 console.log("findKeyword answers: ", option.getAnswers());
@@ -210,6 +192,27 @@ function findKeyword(text) {
     speakResponse(answer);
 }
 
+function finalAnswer(option) {
+    let answer = option.callback();
+    if (option.getState() !== states.UNIFORM) {
+        option.updateState(states.ASKED);
+        option.addCount();
+        if (compareAnswers(answer, option.getAnswers())) {
+            answer = "still, " + answer;
+        }
+    }
+    return answer;
+
+}
+
+function compareAnswers(answer, history) {
+    if (history.length > 0) {
+        if (history[history.length - 1].includes(answer)) {
+            return true; // current answer = last answer
+        }
+    }
+    return false;
+}
 
 function speakResponse(text) {
     const synth = window.speechSynthesis;

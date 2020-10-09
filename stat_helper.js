@@ -1,4 +1,4 @@
-class ChartIt {
+class Visual {
     constructor(addr, title, canvas, type) {
         this.addr = addr;
         this.title = title;
