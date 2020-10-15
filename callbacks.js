@@ -4,10 +4,10 @@ function makeTable() {
     let type = 'line';
 
     visual = new Visual('test.csv', 'Global Average Temperature from 1880', canvas, type);
-    chart = visual.createChart();
+    visual.createChart();
 
     drawn = true;
-    response = 'below is the data of ' + visual.getTitle();
+    response = 'below is'// the data of ' + visual.getTitle();
     return response;
 }
 
@@ -18,7 +18,7 @@ function makeAvg() {
     } else {
         response = 'the average of the data is ' + visual.mean.toFixed(2);
         visual.setMeanDataset(visual.mean);
-        let chart_mean = visual.createChart();
+        // visual.createChart();
     }
     return response;
 }
@@ -30,7 +30,7 @@ function makeMedian() {
     } else {
         response = 'the median of the data is ' + visual.median.toFixed(2);
         visual.setMedianDataset(visual.median);
-        let chart_median = visual.createChart();
+        // visual.createChart();
     }
 
     return response;

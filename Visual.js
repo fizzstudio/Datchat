@@ -16,26 +16,23 @@ class Visual {
     }
 
     createChart = async function () {
-        let data = await this.fetchData(this.addr);
+        await this.initialize();
         console.log("createChart median: ", this.median);
-
-
-        let myChart = new Chart(this.canvas, {
+        this.myChart = new Chart(this.canvas, {
             type: this.type,
             data: {
                 labels: this.xs,
                 datasets: this.datasets,
             },
         })
+        this.myChart.update();
 
 
         // this.setChart(myChart);
         console.log("createChart myChart: ", this.myChart);
-
-        return myChart;
     };
 
-    fetchData = async function () {
+    initialize = async function () {
         let xs = [];
         let ys = [];
         let response = await fetch(this.addr);
@@ -69,13 +66,6 @@ class Visual {
             fill: false
         }
         this.datasets.push(defaultDatasets);
-
-        // console.log("getData: ", copy_data);
-
-        return {
-            xs,
-            ys
-        };
     }
 
     setChart(myChart) {
@@ -120,7 +110,7 @@ class Visual {
             arr.push(data);
         }
         if (!this.add_drawn) {
-            this.datasets.push({
+            this.myChart.data.datasets.push({
                 label: 'Median',
                 data: arr,
                 backgroundColor: "brown",
@@ -128,6 +118,7 @@ class Visual {
                 borderWidth: 1,
                 fill: false
             });
+            this.myChart.update();
             this.add_drawn = true;
         }
 
@@ -139,7 +130,7 @@ class Visual {
             arr.push(data);
         }
         if (!this.add_drawn) {
-            this.datasets.push({
+            this.myChart.data.datasets.push({
                 label: 'Mean',
                 data: arr,
                 backgroundColor: "rice",
@@ -147,6 +138,7 @@ class Visual {
                 borderWidth: 1,
                 fill: false
             });
+            this.myChart.update();
             this.add_drawn = true;
         }
 
