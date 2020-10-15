@@ -145,8 +145,6 @@ class Visual {
             this.add_mean = true;
         }
     }
-
-
 }
 
 
