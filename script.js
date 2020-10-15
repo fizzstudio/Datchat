@@ -70,7 +70,7 @@ function setupInterface() {
             text = text + " and the " + speech_pool[speech_pool.length-1].getKeywords()[0];
         }
         speech.text = text;
-        synth.speak(speech);
+        // synth.speak(speech);
     }
 
 

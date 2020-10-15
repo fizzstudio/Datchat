@@ -10,13 +10,57 @@ class Visual {
         this.xs = [];
         this.datasets = [];
         this.myChart;
+        this.drawn = false;
+        this.add_drawn = false;
 
     }
 
     createChart = async function () {
-        let data = await getData(this.addr);
-        this.setY(data.ys);
-        this.datasets[0] = {
+        let data = await this.fetchData(this.addr);
+        console.log("createChart median: ", this.median);
+
+
+        let myChart = new Chart(this.canvas, {
+            type: this.type,
+            data: {
+                labels: this.xs,
+                datasets: this.datasets,
+            },
+        })
+
+
+        // this.setChart(myChart);
+        console.log("createChart myChart: ", this.myChart);
+
+        return myChart;
+    };
+
+    fetchData = async function () {
+        let xs = [];
+        let ys = [];
+        let response = await fetch(this.addr);
+        let data = await response.text();
+
+
+        let table = data.split('\n').slice(1);
+        table.forEach(elt => {
+            let cols = elt.split(',');
+            let year = cols[0];
+            xs.push(year);
+            let temp = cols[1];
+            ys.push(parseFloat(temp) + 14);
+            // console.log(year, temp);
+        });
+
+        let result = { xs, ys };
+        let copy_result = { ...result };
+        this.setData(copy_result);
+        this.setY(this.data.ys);
+        this.setX(this.data.xs);
+        this.setMedian(this.ys);
+        this.setMean(this.ys);
+
+        let defaultDatasets = {
             label: this.title,
             data: this.ys,
             backgroundColor: "rgba(255, 99, 132, 0.2)",
@@ -24,25 +68,26 @@ class Visual {
             borderWidth: 1,
             fill: false
         }
+        this.datasets.push(defaultDatasets);
 
-        let myChart = new Chart(this.canvas, {
-            type: this.type,
-            data: {
-                labels: data.xs,
-                datasets: this.datasets,
-            },
-        })
-        this.setChart(myChart);
-        this.myChart = myChart;
+        // console.log("getData: ", copy_data);
 
-        console.log("Visual: ", this.myChart);
-        this.setMedian(this.ys);
-        this.setMean(this.ys);
-        return myChart;
-    };
+        return {
+            xs,
+            ys
+        };
+    }
 
     setChart(myChart) {
         this.myChart = myChart;
+    }
+
+    setData(data) {
+        this.data = data;
+    }
+
+    setDatasets(datasets) {
+        this.datasets = datasets;
     }
 
     setY(arr) {
@@ -74,14 +119,18 @@ class Visual {
         for (let i = 0; i < 200; i++) {
             arr.push(data);
         }
-        this.datasets[1] = {
-            label: 'Median',
-            data: arr,
-            backgroundColor: "brown",
-            borderColor: "brown",
-            borderWidth: 1,
-            fill: false
-        };
+        if (!this.add_drawn) {
+            this.datasets.push({
+                label: 'Median',
+                data: arr,
+                backgroundColor: "brown",
+                borderColor: "brown",
+                borderWidth: 1,
+                fill: false
+            });
+            this.add_drawn = true;
+        }
+
     }
 
     setMeanDataset(data) {
@@ -89,39 +138,25 @@ class Visual {
         for (let i = 0; i < 200; i++) {
             arr.push(data);
         }
-        this.datasets[1] = ({
-            label: 'Mean',
-            data: arr,
-            backgroundColor: "rice",
-            borderColor: "rice",
-            borderWidth: 1,
-            fill: false
-        });
+        if (!this.add_drawn) {
+            this.datasets.push({
+                label: 'Mean',
+                data: arr,
+                backgroundColor: "rice",
+                borderColor: "rice",
+                borderWidth: 1,
+                fill: false
+            });
+            this.add_drawn = true;
+        }
+
     }
 }
 
-async function getData(addr) {
-    let xs = [];
-    let ys = [];
-    let response = await fetch(addr);
-    let data = await response.text();
 
-    let table = data.split('\n').slice(1);
-    table.forEach(elt => {
-        let cols = elt.split(',');
-        let year = cols[0];
-        xs.push(year);
-        let temp = cols[1];
-        ys.push(parseFloat(temp) + 14);
-        // console.log(year, temp);
-    });
-    return {
-        xs,
-        ys
-    };
-}
 
-let cal_median = function (array) {
+let cal_median = function (arr) {
+    let array = [...arr];
     array.sort((a, b) => a - b);
     let half = Math.floor(array.length / 2);
     if (array.length % 2 == 1) {
