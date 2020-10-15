@@ -37,32 +37,31 @@ function makeMedian() {
 }
 
 function startover() {
-    // let wrapper = document.getElementById('wrapper');    
-    // let old_myChart = document.getElementById('myChart');
-    // let new_myChart = document.createElement('canvas');
-    // new_myChart.id = "myChart";
-
-    // wrapper.replaceChild(new_myChart, old_myChart);
     refreshCanvas();
-    options.forEach((option) => {
-        if (option.getState() != states.UNIFORM){
-            option.resetState();
-            option.addAnswer("Data has been restarted");
-        }
-    });
+    refreshState();
     response = 'Ok, I just restarted myself';
     drawn = false;
     return response;
 }
 
 function refreshCanvas() {
-    let wrapper = document.getElementById('wrapper');    
+    let wrapper = document.getElementById('wrapper');
     let old_myChart = document.getElementById('myChart');
     let new_myChart = document.createElement('canvas');
     new_myChart.id = "myChart";
 
     wrapper.replaceChild(new_myChart, old_myChart);
 }
+
+function refreshState() {
+    options.forEach((option) => {
+        if (option.getState() != states.UNIFORM) {
+            option.resetState();
+            option.addAnswer("Data has been restarted");
+        }
+    });
+}
+
 
 const states = {
     UNASKED: 0,
