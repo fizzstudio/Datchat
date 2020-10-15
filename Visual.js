@@ -11,7 +11,8 @@ class Visual {
         this.datasets = [];
         this.myChart;
         this.drawn = false;
-        this.add_drawn = false;
+        this.add_median = false;
+        this.add_mean = false;
 
     }
 
@@ -109,6 +110,7 @@ class Visual {
         for (let i = 0; i < 200; i++) {
             arr.push(data);
         }
+
         if (!this.add_drawn) {
             this.myChart.data.datasets.push({
                 label: 'Median',
@@ -119,8 +121,9 @@ class Visual {
                 fill: false
             });
             this.myChart.update();
-            this.add_drawn = true;
+            this.add_median = true;
         }
+
 
     }
 
@@ -139,10 +142,11 @@ class Visual {
                 fill: false
             });
             this.myChart.update();
-            this.add_drawn = true;
+            this.add_mean = true;
         }
-
     }
+
+
 }
 
 
