@@ -100,13 +100,16 @@ function findKeyword(text) {
 
     options.forEach((option) => {
         option.keywords.forEach((keyword) => {
-            
+
             let contain = false;
             split_text.forEach(word => {
-                if (LevenshteinDistance(word, keyword) < 2) {
+                if (word.includes(keyword)) {
+                    contain = true;
+                } else if (LevenshteinDistance(word, keyword) < 2) {
                     contain = true;
                 }
             })
+
             if (contain) {
                 selections.push(option);
                 if (keyword == "table" || keyword == "chart") {

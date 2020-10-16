@@ -25,11 +25,15 @@ class Visual {
                 labels: this.xs,
                 datasets: this.datasets,
             },
+            options: {
+                animation: {
+                    duration: 0
+                }
+            }
         })
         this.myChart.update();
         // this.setChart(myChart);
         console.log("createChart myChart: ", this.myChart);
-        // return mychart;
     };
 
     async initialize() {
@@ -51,6 +55,7 @@ class Visual {
 
         let result = { xs, ys };
         let copy_result = { ...result };
+        
         this.setData(copy_result);
         this.setY(ys);
         this.setX(xs);
@@ -119,7 +124,7 @@ class Visual {
     }
 
     async setMedianDataset(data) {
-        
+
         let arr = [];
         for (let i = 0; i < 200; i++) {
             arr.push(data);
@@ -161,7 +166,7 @@ class Visual {
             this.add_mean = true;
         }
     }
-    
+
 }
 
 let cal_median = function (arr) {

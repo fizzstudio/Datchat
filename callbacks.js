@@ -1,5 +1,6 @@
 
 function makeTable() {
+    refreshCanvas();
     let response = '';
     let canvas = document.getElementById('myChart').getContext('2d');
     let type = 'line';
@@ -8,7 +9,7 @@ function makeTable() {
     visual.createChart();
 
     drawn = true;
-    response = 'below is'// the data of ' + visual.getTitle();
+    response = 'below is the data of ' + visual.getTitle();
     return response;
 }
 
