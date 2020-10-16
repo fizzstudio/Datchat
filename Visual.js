@@ -16,7 +16,7 @@ class Visual {
 
     }
 
-    createChart = async function () {
+    async createChart() {
         await this.initialize();
         console.log("createChart median: ", this.median);
         this.myChart = new Chart(this.canvas, {
@@ -27,13 +27,12 @@ class Visual {
             },
         })
         this.myChart.update();
-
-
         // this.setChart(myChart);
         console.log("createChart myChart: ", this.myChart);
+        // return mychart;
     };
 
-    initialize = async function () {
+    async initialize() {
         let xs = [];
         let ys = [];
         let response = await fetch(this.addr);
@@ -66,11 +65,15 @@ class Visual {
             borderWidth: 1,
             fill: false
         }
-        this.datasets.push(defaultDatasets);
+        this.datasets[0] = (defaultDatasets);
     }
 
     setChart(myChart) {
         this.myChart = myChart;
+    }
+
+    getChart() {
+        return this.myChart;
     }
 
     setData(data) {
@@ -105,14 +108,25 @@ class Visual {
         return this.title;
     }
 
-    setMedianDataset(data) {
+    async drawMedian(data) {
+        await this.initialize();
+        await this.setMedianDataset(data);
+    }
+
+    async drawMean(data) {
+        await this.initialize();
+        await this.setMeanDataset(data);
+    }
+
+    async setMedianDataset(data) {
+        
         let arr = [];
         for (let i = 0; i < 200; i++) {
             arr.push(data);
         }
 
-        if (!this.add_drawn) {
-            this.myChart.data.datasets.push({
+        if (!this.add_median) {
+            this.datasets.push({
                 label: 'Median',
                 data: arr,
                 backgroundColor: "brown",
@@ -121,19 +135,21 @@ class Visual {
                 fill: false
             });
             this.myChart.update();
+
+            console.log("setmediandata: ", this.myChart);
             this.add_median = true;
+
+            // await this.createChart();
         }
-
-
     }
 
-    setMeanDataset(data) {
+    async setMeanDataset(data) {
         let arr = [];
         for (let i = 0; i < 200; i++) {
             arr.push(data);
         }
-        if (!this.add_drawn) {
-            this.myChart.data.datasets.push({
+        if (!this.add_mean) {
+            this.datasets.push({
                 label: 'Mean',
                 data: arr,
                 backgroundColor: "rice",
@@ -145,9 +161,8 @@ class Visual {
             this.add_mean = true;
         }
     }
+    
 }
-
-
 
 let cal_median = function (arr) {
     let array = [...arr];

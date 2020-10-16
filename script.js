@@ -5,6 +5,7 @@ var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList
 var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent
 let visual = undefined;
 let chart = undefined;
+let canvas = document.getElementById('myChart').getContext('2d');
 let drawn = false;
 let ignored = false;
 
@@ -36,6 +37,8 @@ function startBot() {
 
         setupInterface();
         operate();
+        // chart = createChart('test.csv', 'Global Average Temperature from 1880', canvas, "line");
+        // drawn = true;
     });
 }
 
@@ -67,7 +70,7 @@ function setupInterface() {
             text = text + ", the " + speech_pool[i].getKeywords()[0];
         }
         if (speech_pool.length > 1) {
-            text = text + " and the " + speech_pool[speech_pool.length-1].getKeywords()[0];
+            text = text + " and the " + speech_pool[speech_pool.length - 1].getKeywords()[0];
         }
         speech.text = text;
         // synth.speak(speech);
@@ -90,6 +93,8 @@ function setupInterface() {
 function findKeyword(text) {
     let response = 'Sorry';
     let negated = false;
+    let selections = [];
+    let speech_pool = [];
     negation_markers.forEach((negator) => {
         if (text.includes(negator)) {
             negated = true;
@@ -99,23 +104,40 @@ function findKeyword(text) {
     options.forEach((option) => {
         option.keywords.forEach((keyword) => {
             if (text.includes(keyword)) {
-                if (!negated) {
-                    response = resultAnswer(option);
-                } else {
-                    response = 'ok, no ' + keyword + '.';
+                selections.push(option);
+                if (keyword == "table" || keyword == "chart") {
+                    if (selections.length > 1) {
+                        let popped = selections.pop();
+                        selections.unshift(popped);
+                    }
                 }
-                if (response == "you need first to have a chart.") { // If answer = "you need...chart", reset option state to UNASKED
-                    option.updateState(states.UNASKED);
-                } else {
-                    option.addAnswer(response); // Get rid of meaningless answer "you need...chart"
-                }
-                console.log("findKeyword counts: ", option.getCount());
-                console.log("findKeyword option state: ", option.getState());
-                console.log("findKeyword answers: ", option.getAnswers());
             }
         });
+    });
+
+    console.log("findKeyword selections:", selections);
+
+    selections.forEach((selection) => {
+        if (!negated) {
+            response = resultAnswer(selection);
+        } else {
+            response = 'ok, no ' + keyword + '.';
+        }
+        if (response == "you need first to have a chart.") { // If answer = "you need...chart", reset option state to UNASKED
+            selection.updateState(states.UNASKED);
+        } else {
+            selection.addAnswer(response); // Get rid of meaningless answer "you need...chart"
+        }
+        speech_pool.push(response);
+        console.log("findKeyword counts: ", selection.getCount());
+        console.log("findKeyword option state: ", selection.getState());
+        console.log("findKeyword answers: ", selection.getAnswers());
 
     });
+    response = speech_pool[0];
+    for (let i = 1; i < speech_pool.length; i++) {
+        response += ", " + speech_pool[i];
+    }
     speakResponse(response);
 }
 
