@@ -7,8 +7,6 @@ function makeTable() {
     visual = new Visual('test.csv', 'Global Average Temperature from 1880', canvas, type);
     visual.createChart();
 
-    console.log("makeTable chart: ", chart);
-
     drawn = true;
     response = 'below is'// the data of ' + visual.getTitle();
     return response;

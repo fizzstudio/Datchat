@@ -88,19 +88,26 @@ function findKeyword(text) {
     let negated = false;
     let selections = [];
     let speech_pool = [];
+
+    let split_text = text.split(" ");
+    console.log("findKeyword split_text: ", split_text);
+
     negation_markers.forEach((negator) => {
         if (text.includes(negator)) {
             negated = true;
         }
     });
 
-    let split_text = text.split(" ");
-    console.log("findKeyword split_text: ", split_text);
-    // split_text.
-
     options.forEach((option) => {
         option.keywords.forEach((keyword) => {
-            if (text.includes(keyword) || LevenshteinDistance(text, keyword) < 2) {
+            
+            let contain = false;
+            split_text.forEach(word => {
+                if (LevenshteinDistance(word, keyword) < 2) {
+                    contain = true;
+                }
+            })
+            if (contain) {
                 selections.push(option);
                 if (keyword == "table" || keyword == "chart") {
                     if (selections.length > 1) {
