@@ -37,8 +37,6 @@ function startBot() {
 
         setupInterface();
         operate();
-        // chart = createChart('test.csv', 'Global Average Temperature from 1880', canvas, "line");
-        // drawn = true;
     });
 }
 
@@ -52,11 +50,9 @@ function setupInterface() {
 
         if (options[i].getState() === states.UNASKED) {
             speech_pool.push(options[i]);
-            // speech.text = options[i].getContent();
-            console.log("setUpInterface", options[i].getKeywords());
-            console.log("setUpInterface option state", options[i].getState());
-            console.log("setUpInterface speech_pool: ", speech_pool);
-            // synth.speak(speech);
+            // console.log("setUpInterface", options[i].getKeywords());
+            // console.log("setUpInterface option state", options[i].getState());
+            // console.log("setUpInterface speech_pool: ", speech_pool);
         } else if (options[i].getState() === states.ASKED) {
             silence += 1;
         }
@@ -76,12 +72,9 @@ function setupInterface() {
         // synth.speak(speech);
     }
 
-
-
-    console.log("setupInterface silence: ", silence);
+    // console.log("setupInterface silence: ", silence);
     if (silence == options.length - 1 && ignored == false) {
         ignored = true;
-        console.log("You come here ", options);
         const synth = window.speechSynthesis;
         const speech = new SpeechSynthesisUtterance();
         speech.text = options[3].getContent();
@@ -101,21 +94,25 @@ function findKeyword(text) {
         }
     });
 
+    let split_text = text.split(" ");
+    console.log("findKeyword split_text: ", split_text);
+    // split_text.
+
     options.forEach((option) => {
         option.keywords.forEach((keyword) => {
-            if (text.includes(keyword)) {
+            if (text.includes(keyword) || LevenshteinDistance(text, keyword) < 2) {
                 selections.push(option);
                 if (keyword == "table" || keyword == "chart") {
                     if (selections.length > 1) {
                         let popped = selections.pop();
-                        selections.unshift(popped);
+                        selections.unshift(popped);             // make sure making table always happens first
                     }
                 }
             }
         });
     });
 
-    console.log("findKeyword selections:", selections);
+    // console.log("findKeyword selections:", selections);
 
     selections.forEach((selection) => {
         if (!negated) {
@@ -134,10 +131,13 @@ function findKeyword(text) {
         console.log("findKeyword answers: ", selection.getAnswers());
 
     });
-    response = speech_pool[0];
-    for (let i = 1; i < speech_pool.length; i++) {
-        response += ", " + speech_pool[i];
+    if (selections.length > 0) {
+        response = speech_pool[0];
+        for (let i = 1; i < speech_pool.length; i++) {
+            response += ", " + speech_pool[i];
+        }
     }
+
     speakResponse(response);
 }
 
@@ -219,3 +219,37 @@ function onSpeechError() {
         outputBot.textContent = 'Error: ' + e.error;
     });
 }
+
+function LevenshteinDistance(a, b) {
+    if (a.length == 0) return b.length;
+    if (b.length == 0) return a.length;
+
+    var matrix = [];
+
+    // increment along the first column of each row
+    var i;
+    for (i = 0; i <= b.length; i++) {
+        matrix[i] = [i];
+    }
+
+    // increment each column in the first row
+    var j;
+    for (j = 0; j <= a.length; j++) {
+        matrix[0][j] = j;
+    }
+
+    // Fill in the rest of the matrix
+    for (i = 1; i <= b.length; i++) {
+        for (j = 1; j <= a.length; j++) {
+            if (b.charAt(i - 1) == a.charAt(j - 1)) {
+                matrix[i][j] = matrix[i - 1][j - 1];
+            } else {
+                matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, // substitution
+                    Math.min(matrix[i][j - 1] + 1, // insertion
+                        matrix[i - 1][j] + 1)); // deletion
+            }
+        }
+    }
+
+    return matrix[b.length][a.length];
+};

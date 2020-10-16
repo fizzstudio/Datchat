@@ -52,8 +52,8 @@ class Visual {
         let result = { xs, ys };
         let copy_result = { ...result };
         this.setData(copy_result);
-        this.setY(this.data.ys);
-        this.setX(this.data.xs);
+        this.setY(ys);
+        this.setX(xs);
         this.setMedian(this.ys);
         this.setMean(this.ys);
 
@@ -126,7 +126,7 @@ class Visual {
         }
 
         if (!this.add_median) {
-            this.datasets.push({
+            this.myChart.data.datasets.push({
                 label: 'Median',
                 data: arr,
                 backgroundColor: "brown",
@@ -149,7 +149,7 @@ class Visual {
             arr.push(data);
         }
         if (!this.add_mean) {
-            this.datasets.push({
+            this.myChart.data.datasets.push({
                 label: 'Mean',
                 data: arr,
                 backgroundColor: "rice",

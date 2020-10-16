@@ -11,7 +11,7 @@ const Option = class {
         } else if (this.type == Option.Types.OPERATIONAL) {
             this.state = states.UNIFORM;
         }
-        console.log("Option: ", this.state);
+        // console.log("Option: ", this.state);
 
     }
     getContent() {
