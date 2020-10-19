@@ -3,9 +3,11 @@
 var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
 var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList
 var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent
-let chartIt = undefined;
+let visual = undefined;
 let chart = undefined;
+let canvas = document.getElementById('myChart').getContext('2d');
 let drawn = false;
+let ignored = false;
 
 const recognition = new SpeechRecognition();
 var speechRecognitionList = new SpeechGrammarList();
@@ -19,62 +21,165 @@ recognition.maxAlternatives = 1;
 const outputYou = document.querySelector('.output-you');
 const outputBot = document.querySelector('.output-bot');
 
-const states = {
-    UNASKED: 0,
-    ASKED: 1,
-    RECALLED: 2
 
-}
+let options = [];
 
-const Option = class {
-    constructor(content, hashtag) {
-        this.content = content;
-        this.hashtag = hashtag;
-        this.answers = [];
-        this.state = states.UNASKED;
-    }
-    getContent() {
-        return this.content;
-    }
-
-    setAnswers(answer) {
-        this.answers.push(answer);
-    }
-
-    getAnswers() {
-        return this.answers;
-    }
-
-    getState() {
-        return this.state;
-    }
-
-    updateState(state) {
-        this.state = state;
-    }
-
-    resetState() {
-        this.state = states.UNASKED;
-    }
-
-    getHash() {
-        return this.hashtag;
-    }
-}
-
-const options = [];
+let negation_markers = ["n't", "not", "no", "never"];
 
 startBot();
 
 function startBot() {
     document.addEventListener('DOMContentLoaded', () => {
-        options.push(new Option("Please request a chart first", ["chart"]));
-        options.push(new Option("You can select the average", ['average', "mean"]));
-        options.push(new Option("You can select the median", ["median"]));
+        options.push(new Option("You can request a chart first", ["chart", "table"], makeTable, Option.Types.COMPUTATIONAL));
+        options.push(new Option("You can request the average", ['average', "avg", "mean"], makeAvg, Option.Types.COMPUTATIONAL));
+        options.push(new Option("You can request the median", ["median"], makeMedian, Option.Types.COMPUTATIONAL));
+        options.push(new Option("Options are done. You can start over", ['restart'], startover, Option.Types.OPERATIONAL));
 
         setupInterface();
         operate();
     });
+}
+
+
+function setupInterface() {
+    let silence = 0;
+    let speech_pool = [];
+    for (let i = 0; i < options.length; i++) {
+        const synth = window.speechSynthesis;
+        const speech = new SpeechSynthesisUtterance();
+
+        if (options[i].getState() === states.UNASKED) {
+            speech_pool.push(options[i]);
+            // console.log("setUpInterface", options[i].getKeywords());
+            // console.log("setUpInterface option state", options[i].getState());
+            // console.log("setUpInterface speech_pool: ", speech_pool);
+        } else if (options[i].getState() === states.ASKED) {
+            silence += 1;
+        }
+
+    }
+    const synth = window.speechSynthesis;
+    const speech = new SpeechSynthesisUtterance();
+    if (speech_pool.length != 0) {
+        let text = speech_pool[0].getContent();
+        for (let i = 1; i < speech_pool.length - 1; i++) {
+            text = text + ", the " + speech_pool[i].getKeywords()[0];
+        }
+        if (speech_pool.length > 1) {
+            text = text + " and the " + speech_pool[speech_pool.length - 1].getKeywords()[0];
+        }
+        speech.text = text;
+        // synth.speak(speech);
+    }
+
+    // console.log("setupInterface silence: ", silence);
+    if (silence == options.length - 1 && ignored == false) {
+        ignored = true;
+        const synth = window.speechSynthesis;
+        const speech = new SpeechSynthesisUtterance();
+        speech.text = options[3].getContent();
+
+        synth.speak(speech);
+    }
+}
+
+function findKeyword(text) {
+    let response = 'Sorry';
+    let negated = false;
+    let selections = [];
+    let speech_pool = [];
+
+    let split_text = text.split(" ");
+    console.log("findKeyword split_text: ", split_text);
+
+    negation_markers.forEach((negator) => {
+        if (text.includes(negator)) {
+            negated = true;
+        }
+    });
+
+    options.forEach((option) => {
+        option.keywords.forEach((keyword) => {
+
+            let contain = false;
+            split_text.forEach(word => {
+                if (word.includes(keyword)) {
+                    contain = true;
+                } else if (LevenshteinDistance(word, keyword) < 2) {
+                    contain = true;
+                }
+            })
+
+            if (contain) {
+                selections.push(option);
+                if (keyword == "table" || keyword == "chart") {
+                    if (selections.length > 1) {
+                        let popped = selections.pop();
+                        selections.unshift(popped);             // make sure making table always happens first
+                    }
+                }
+            }
+        });
+    });
+
+    // console.log("findKeyword selections:", selections);
+
+    selections.forEach((selection) => {
+        if (!negated) {
+            response = resultAnswer(selection);
+        } else {
+            response = 'ok, no ' + keyword + '.';
+        }
+        if (response == "you need first to have a chart.") { // If answer = "you need...chart", reset option state to UNASKED
+            selection.updateState(states.UNASKED);
+        } else {
+            selection.addAnswer(response); // Get rid of meaningless answer "you need...chart"
+        }
+        speech_pool.push(response);
+        console.log("findKeyword counts: ", selection.getCount());
+        console.log("findKeyword option state: ", selection.getState());
+        console.log("findKeyword answers: ", selection.getAnswers());
+
+    });
+    if (selections.length > 0) {
+        response = speech_pool[0];
+        for (let i = 1; i < speech_pool.length; i++) {
+            response += ", " + speech_pool[i];
+        }
+    }
+
+    speakResponse(response);
+}
+
+function resultAnswer(option) {
+    let response = option.callback();
+    if (option.getState() !== states.UNIFORM) {
+        option.updateState(states.ASKED);
+        option.addCount();
+        if (compareAnswers(response, option.getAnswers())) {
+            response = "still, " + response;
+        }
+    }
+    return response;
+}
+
+function compareAnswers(response, history) {
+    if (history.length > 0) {
+        if (history[history.length - 1].includes(response)) {
+            return true; // current answer = last answer
+        }
+    }
+    return false;
+}
+
+function speakResponse(text) {
+    const synth = window.speechSynthesis;
+    const speech = new SpeechSynthesisUtterance();
+    speech.text = text;
+    synth.speak(speech);
+    outputBot.textContent = speech.text.charAt(0).toUpperCase() + speech.text.slice(1);;
+
+    setupInterface();
 
 }
 
@@ -84,46 +189,6 @@ function operate() {
     onSpeechResult();
     onSpeechEnd();
     onSpeechError();
-}
-
-function setupInterface() {
-    let silence = 0;
-    for (let i = 0; i < options.length; i++) {
-        const synth = window.speechSynthesis;
-        const speech = new SpeechSynthesisUtterance();
-        if (options[i].getState() === states.UNASKED) {
-            speech.text = options[i].getContent();
-            console.log(options[i].getHash());
-            // synth.speak(speech);
-        } else {
-            silence += 1;
-        }
-    }
-    if (silence == options.length) {
-        const synth = window.speechSynthesis;
-        const speech = new SpeechSynthesisUtterance();
-        speech.text = "Options are done. You can start over";
-        synth.speak(speech);
-
-    }
-}
-
-
-function updateState(text) {
-    let option;
-    for (let i = 0; i < options.length; i++) {
-        option = options[i];
-        if (option.getHash().includes(text)) {
-            switch (option.getState()) {
-                case states.UNASKED:
-                    option.updateState(states.ASKED);
-                    return option;
-                case states.ASKED:
-                    option.updateState(states.RECALLED);
-                    return option;
-            }
-        }
-    }
 }
 
 function onClick() {
@@ -147,7 +212,7 @@ function onSpeechResult() {
 
         outputYou.textContent = text.charAt(0).toUpperCase() + text.slice(1);;
 
-        synthVoice(text);
+        findKeyword(text);
         console.log('Confidence: ' + e.results[0][0].confidence);
     });
 }
@@ -165,97 +230,36 @@ function onSpeechError() {
     });
 }
 
+function LevenshteinDistance(a, b) {
+    if (a.length == 0) return b.length;
+    if (b.length == 0) return a.length;
 
-function synthVoice(text) {
-    const synth = window.speechSynthesis;
-    const speech = new SpeechSynthesisUtterance();
-    let wrapper = document.getElementById('wrapper');
-    let canvas = document.getElementById('myChart');
-    let type = 'line';
-    let option;
-    let answers;
+    var matrix = [];
 
-
-    speech.text = "Sorry, I did not understand that.";
-
-    if (/table|chart/.test(text)) {
-        canvas.style.visibility = 'visible';
-
-        if (/pie/.test(text)) {
-            type = 'pie'
-        }
-        if (/line/.test(text)) {
-            type = 'line'
-        }
-        if (/bar/.test(text)) {
-            type = 'bar'
-        }
-        chartIt = new ChartIt('test.csv', 'Global Average Temperature', canvas, type);
-        chart = chartIt.createChart();
-        drawn = true;
-        speech.text = 'Below is the chart you want.';
-        option = updateState("chart");
-        console.log(option);
-        option.setAnswers(speech.text);
+    // increment along the first column of each row
+    var i;
+    for (i = 0; i <= b.length; i++) {
+        matrix[i] = [i];
     }
 
-    if (/mean|average|avg/.test(text)) {
-        option = updateState("average");
-        if (!drawn) {
-            speech.text = 'You need first to have a chart.';
-            option.resetState(states.UNASKED);
-        } else {
-            // const average = arr => arr.reduce((sume, el) => sume + el, 0) / arr.length;
-            answers = option.getAnswers();
-            if (answers.length > 0) {
-                if (answers[answers.length - 1].includes(chartIt.mean.toFixed(2))) {
-                    speech.text = 'The average of the data is still ' + chartIt.mean.toFixed(2);
-                };
+    // increment each column in the first row
+    var j;
+    for (j = 0; j <= a.length; j++) {
+        matrix[0][j] = j;
+    }
+
+    // Fill in the rest of the matrix
+    for (i = 1; i <= b.length; i++) {
+        for (j = 1; j <= a.length; j++) {
+            if (b.charAt(i - 1) == a.charAt(j - 1)) {
+                matrix[i][j] = matrix[i - 1][j - 1];
             } else {
-                speech.text = 'The average of the data is ' + chartIt.mean.toFixed(2);
+                matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, // substitution
+                    Math.min(matrix[i][j - 1] + 1, // insertion
+                        matrix[i - 1][j] + 1)); // deletion
             }
-            chartIt.setMeanDataset(chartIt.mean);
-            let chart_mean = chartIt.createChart();
         }
-        console.log(option);
-        option.setAnswers(speech.text);
     }
 
-    if (/median/.test(text)) {
-        option = updateState("median");
-        if (!drawn) {
-            speech.text = 'You need first to have a chart.';
-            option.resetState(states.UNASKED);
-        } else {
-            answers = option.getAnswers();
-            if (answers.length > 0) {
-                if (answers[answers.length - 1].includes(chartIt.median.toFixed(2).toString())) {
-                    speech.text = 'The median of the data is still ' + chartIt.median.toFixed(2);
-                }
-            } else {
-                speech.text = 'The median of the data is ' + chartIt.median.toFixed(2);
-            }
-            chartIt.setMedianDataset(chartIt.median);
-            let chart_median = chartIt.createChart();
-        }
-        console.log(option);
-        option.setAnswers(speech.text);
-    }
-
-    if (/start/.test(text)) {
-
-        canvas.style.visibility = "hidden";
-        // let context = canvas.getContext("2d");
-        // context.clearRect(0, 0, canvas.width, canvas.height);
-        options.forEach(option => option.resetState());
-        speech.text = 'Ok, I just restarted myself';
-        drawn = false;
-    }
-
-    synth.speak(speech);
-    outputBot.textContent = speech.text;
-    console.log(canvas);
-    
-
-    setupInterface();
-}
+    return matrix[b.length][a.length];
+};
