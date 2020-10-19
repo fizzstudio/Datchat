@@ -1,12 +1,12 @@
 
-function makeTable() {
+async function makeTable() {
     refreshCanvas();
     let response = '';
     let canvas = document.getElementById('myChart').getContext('2d');
     let type = 'line';
 
     visual = new Visual('test.csv', 'Global Average Temperature from 1880', canvas, type);
-    visual.createChart();
+    await visual.createChart();
 
     drawn = true;
     response = 'below is the data of ' + visual.getTitle();

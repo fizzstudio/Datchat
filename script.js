@@ -151,8 +151,8 @@ function findKeyword(text) {
     speakResponse(response);
 }
 
-function resultAnswer(option) {
-    let response = option.callback();
+async function resultAnswer(option) {
+    let response = await option.callback();
     if (option.getState() !== states.UNIFORM) {
         option.updateState(states.ASKED);
         option.addCount();

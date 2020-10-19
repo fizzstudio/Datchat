@@ -17,6 +17,8 @@ class Visual {
     }
 
     async createChart() {
+        let foo = '';
+        console.log('createChart: ');
         await this.initialize();
         console.log("createChart median: ", this.median);
         this.myChart = new Chart(this.canvas, {
@@ -71,6 +73,7 @@ class Visual {
             fill: false
         }
         this.datasets[0] = (defaultDatasets);
+        return null;
     }
 
     setChart(myChart) {
