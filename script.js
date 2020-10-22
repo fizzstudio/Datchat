@@ -30,8 +30,9 @@ startBot();
 function startBot() {
     document.addEventListener('DOMContentLoaded', () => {
         options.push(new Option("You can request a chart first", ["chart", "table"], makeTable, Option.Types.COMPUTATIONAL));
-        options.push(new Option("You can request the average", ['average', "avg", "mean"], makeAvg, Option.Types.COMPUTATIONAL));
-        options.push(new Option("You can request the median", ["median"], makeMedian, Option.Types.COMPUTATIONAL));
+        options.push(new Option("You can request the average", ['average', "avg", "mean"], reportAvg, Option.Types.COMPUTATIONAL));
+        options.push(new Option("You can request the median", ["median"], reportMedian, Option.Types.COMPUTATIONAL));
+        options.push(new Option("You can request the trend", ["trend", "tendency"], reportTrend, Option.Types.COMPUTATIONAL));
         options.push(new Option("Options are done. You can start over", ['restart'], startover, Option.Types.OPERATIONAL));
 
         setupInterface();

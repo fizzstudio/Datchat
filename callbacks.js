@@ -15,21 +15,33 @@ async function makeTable() {
     return response;
 }
 
-async function makeAvg() {
-    let response = "average";
+async function reportAvg() {
+    let response = "";
     if (!drawn) {
         response = 'you need first to have a chart.';
     } else {
-        response = 'the average of the data is ' + visual.stat_props.mean.toFixed(2);
-        await visual.drawStatistics('mean');
-        
-        // visual.createChart();
+        let mean = ss.mean(visual.ys);
+        response = 'the average of the data is ' + mean.toFixed(2);
+        await visual.drawStatistics('mean', mean);
     }
     return response;
 }
 
-async function makeMedian() {
-    let response = "median";
+async function reportMedian() {
+    let response = "";
+    if (!drawn) {
+        response = 'you need first to have a chart.';
+    } else {
+        let median = ss.median(visual.ys);
+        response = 'the median of the data is ' + median.toFixed(2);
+        // console.log('makeMedian: ', visual.stat_props.median);
+        await visual.drawStatistics('median', median);
+    }
+    return response;
+}
+
+async function reportTrend() {
+    let response = "";
     if (!drawn) {
         response = 'you need first to have a chart.';
     } else {
@@ -37,7 +49,6 @@ async function makeMedian() {
         console.log('makeMedian: ', visual.stat_props.median);
         await visual.drawStatistics('median');
     }
-
     return response;
 }
 

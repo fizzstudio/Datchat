@@ -4,7 +4,6 @@ class Visual {
         this.title = title;
         this.canvas = canvas;
         this.type = type;
-        this.stat_props = {};
         this.ys = [];
         this.xs = [];
         this.datasets = [];
@@ -44,13 +43,8 @@ class Visual {
             ys.push(parseFloat(temp) + 14);
         });
 
-        let result = { xs, ys };
-        let copy_result = { ...result };
-
         this.ys = ys;
         this.xs = xs;
-        this.stat_props.median = ss.median(ys);
-        this.stat_props.mean = ss.mean(ys);
 
         let defaultDatasets = {
             label: this.title,
@@ -65,18 +59,15 @@ class Visual {
 
     addDatasets(datasets) { this.datasets.push(datasets); }
 
-    async drawStatistics(stat) {
-        let stat_val = 0;
+    async drawStatistics(stat, stat_val) {
         switch (stat) {
             case 'median':
-                stat_val = this.stat_props.median;
                 if (!this.drawn.median) {
                     await this.setStatDataset(stat, stat_val);
                     this.drawn.median = true;
                 }
                 break;
             case 'mean':
-                stat_val = this.stat_props.mean;
                 if (!this.drawn.mean) {
                     await this.setStatDataset(stat, stat_val);
                     this.drawn.mean = true;
