@@ -56,8 +56,8 @@ class Visual {
         this.data = copy_result;
         this.ys = ys;
         this.xs = xs;
-        this.median = cal_median(ys);
-        this.mean = cal_mean(ys);
+        this.median = ss.median(ys);
+        this.mean = ss.mean(ys);
 
         let defaultDatasets = {
             label: this.title,
@@ -116,23 +116,4 @@ class Visual {
         }
     }
 
-}
-
-let cal_median = function (arr) {
-    let array = [...arr];
-    array.sort((a, b) => a - b);
-    let half = Math.floor(array.length / 2);
-    if (array.length % 2 == 1) {
-        return array[half];
-    } else {
-        return (array[half] + array[half - 1]) / 2;
-    }
-}
-
-let cal_mean = function (array) {
-    let sum = 0;
-    for (let i = 0; i < array.length; i++) {
-        sum += array[i];
-    }
-    return sum / array.length;
 }
