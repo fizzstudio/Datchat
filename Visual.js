@@ -9,8 +9,7 @@ class Visual {
         this.ys = [];
         this.xs = [];
         this.datasets = [];
-        this.myChart;
-        this.drawn = false;
+        this.chart;
         this.add_median = false;
         this.add_mean = false;
 
@@ -18,7 +17,7 @@ class Visual {
 
     async createChart() {
         await this.initialize();
-        let myChart = new Chart(this.canvas, {
+        let chart = new Chart(this.canvas, {
             type: this.type,
             data: {
                 labels: this.xs,
@@ -30,10 +29,9 @@ class Visual {
             //     }
             // }
         })
-        myChart.update();
-        this.setChart(myChart);
-        console.log("createChart myChart: ", this.myChart);
-        return myChart;
+        chart.update();
+        this.chart = chart;
+        return chart;
     };
 
     async initialize() {
@@ -41,7 +39,6 @@ class Visual {
         let ys = [];
         let response = await fetch(this.addr);
         let data = await response.text();
-
 
         let table = data.split('\n').slice(1);
         table.forEach(elt => {
@@ -56,11 +53,11 @@ class Visual {
         let result = { xs, ys };
         let copy_result = { ...result };
 
-        this.setData(copy_result);
-        this.setY(ys);
-        this.setX(xs);
-        this.setMedian(this.ys);
-        this.setMean(this.ys);
+        this.data = copy_result;
+        this.ys = ys;
+        this.xs = xs;
+        this.median = cal_median(ys);
+        this.mean = cal_mean(ys);
 
         let defaultDatasets = {
             label: this.title,
@@ -70,36 +67,14 @@ class Visual {
             borderWidth: 1,
             fill: false
         }
-        this.datasets[0] = (defaultDatasets);
+        this.addDatasets(defaultDatasets);
     }
 
-    setChart(myChart) { this.myChart = myChart; }
+    addDatasets(datasets) { this.datasets.push(datasets); }
 
-    getChart() { return this.myChart; }
+    async drawMedian(data) { await this.setMedianDataset(data); }
 
-    setData(data) { this.data = data; }
-
-    setDatasets(datasets) { this.datasets = datasets; }
-
-    setY(arr) { this.ys = arr; };
-
-    setX(arr) { this.xs = arr; };
-
-    setMedian(arr) { this.median = cal_median(arr); };
-
-    setMean(arr) { this.mean = cal_mean(arr); }
-
-    getMedian() { return this.median; };
-
-    getTitle() { return this.title; }
-
-    async drawMedian(data) {
-        await this.setMedianDataset(data);
-    }
-
-    async drawMean(data) {
-        await this.setMeanDataset(data);
-    }
+    async drawMean(data) { await this.setMeanDataset(data); }
 
     async setMedianDataset(data) {
 
@@ -109,7 +84,7 @@ class Visual {
         }
 
         if (!this.add_median) {
-            this.myChart.data.datasets.push({
+            this.chart.data.datasets.push({
                 label: 'Median',
                 data: arr,
                 backgroundColor: "brown",
@@ -117,9 +92,7 @@ class Visual {
                 borderWidth: 1,
                 fill: false
             });
-            this.myChart.update();
-
-            console.log("setmediandata: ", this.myChart);
+            this.chart.update();
             this.add_median = true;
         }
     }
@@ -130,7 +103,7 @@ class Visual {
             arr.push(data);
         }
         if (!this.add_mean) {
-            this.myChart.data.datasets.push({
+            this.chart.data.datasets.push({
                 label: 'Mean',
                 data: arr,
                 backgroundColor: "rice",
@@ -138,7 +111,7 @@ class Visual {
                 borderWidth: 1,
                 fill: false
             });
-            this.myChart.update();
+            this.chart.update();
             this.add_mean = true;
         }
     }

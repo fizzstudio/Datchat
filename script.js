@@ -45,14 +45,8 @@ function setupInterface() {
     let silence = 0;
     let speech_pool = [];
     for (let i = 0; i < options.length; i++) {
-        const synth = window.speechSynthesis;
-        const speech = new SpeechSynthesisUtterance();
-
         if (options[i].getState() === states.UNASKED) {
             speech_pool.push(options[i]);
-            // console.log("setUpInterface", options[i].getKeywords());
-            // console.log("setUpInterface option state", options[i].getState());
-            // console.log("setUpInterface speech_pool: ", speech_pool);
         } else if (options[i].getState() === states.ASKED) {
             silence += 1;
         }
@@ -69,10 +63,10 @@ function setupInterface() {
             text = text + " and the " + speech_pool[speech_pool.length - 1].getKeywords()[0];
         }
         speech.text = text;
-        // synth.speak(speech);
+        synth.speak(speech);
     }
 
-    // console.log("setupInterface silence: ", silence);
+
     if (silence == options.length - 1 && ignored == false) {
         ignored = true;
         const synth = window.speechSynthesis;
@@ -83,80 +77,37 @@ function setupInterface() {
     }
 }
 
-async function findKeyword(text) {
+async function findResponse(text) {
     let response = 'Sorry';
-    let negated = false;
-    let selections = [];
+    let selections = keywordDetect(options, text);
+    let negated = negationDetect(negation_markers, text);
     let speech_pool = [];
-
-    let split_text = text.split(" ");
-    console.log("findKeyword split_text: ", split_text);
-
-    negation_markers.forEach((negator) => {
-        if (text.includes(negator)) {
-            negated = true;
-        }
-    });
-
-    options.forEach((option) => {
-        option.keywords.forEach((keyword) => {
-
-            let contain = false;
-            split_text.forEach(word => {
-                if (word.includes(keyword)) {
-                    contain = true;
-                } else if (LevenshteinDistance(word, keyword) < 2) {
-                    contain = true;
-                }
-            })
-
-            if (contain) {
-                selections.push(option);
-                if (keyword == "table" || keyword == "chart") {
-                    if (selections.length > 1) {
-                        let popped = selections.pop();
-                        selections.unshift(popped);             // make sure making table always happens first
-                    }
-                }
-            }
-        });
-    });
-
-    console.log("findKeyword selections:", selections);
 
     for (let selection of selections) {
         if (!negated) {
             response = await resultAnswer(selection);
         } else {
-            response = 'ok, no ' + keyword + '.';
+            response = 'ok, no ' + selection.keywords[0] + '.';
         }
         if (response == "you need first to have a chart.") { // If answer = "you need...chart", reset option state to UNASKED
             selection.updateState(states.UNASKED);
         } else {
             selection.addAnswer(response); // Get rid of meaningless answer "you need...chart"
-
         }
         speech_pool.push(response);
     };
 
-    console.log('UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU');
-    console.log('selections: ', speech_pool);
     if (selections.length > 0) {
         response = speech_pool[0];
         for (let i = 1; i < speech_pool.length; i++) {
             response += ", " + speech_pool[i];
-
         }
-
     }
-
     speakResponse(response);
 }
 
 async function resultAnswer(option) {
     let response = await option.callback();
-    console.log('YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY');
-    console.log('resultAnswer: ', response);
     if (option.getState() !== states.UNIFORM) {
         option.updateState(states.ASKED);
         option.addCount();
@@ -216,7 +167,7 @@ async function onSpeechResult() {
 
         outputYou.textContent = text.charAt(0).toUpperCase() + text.slice(1);;
 
-        await findKeyword(text);
+        await findResponse(text);
         console.log('Confidence: ' + e.results[0][0].confidence);
     });
 }
@@ -233,37 +184,3 @@ function onSpeechError() {
         outputBot.textContent = 'Error: ' + e.error;
     });
 }
-
-function LevenshteinDistance(a, b) {
-    if (a.length == 0) return b.length;
-    if (b.length == 0) return a.length;
-
-    var matrix = [];
-
-    // increment along the first column of each row
-    var i;
-    for (i = 0; i <= b.length; i++) {
-        matrix[i] = [i];
-    }
-
-    // increment each column in the first row
-    var j;
-    for (j = 0; j <= a.length; j++) {
-        matrix[0][j] = j;
-    }
-
-    // Fill in the rest of the matrix
-    for (i = 1; i <= b.length; i++) {
-        for (j = 1; j <= a.length; j++) {
-            if (b.charAt(i - 1) == a.charAt(j - 1)) {
-                matrix[i][j] = matrix[i - 1][j - 1];
-            } else {
-                matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, // substitution
-                    Math.min(matrix[i][j - 1] + 1, // insertion
-                        matrix[i - 1][j] + 1)); // deletion
-            }
-        }
-    }
-
-    return matrix[b.length][a.length];
-};

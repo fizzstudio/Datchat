@@ -8,13 +8,10 @@ async function makeTable() {
     visual = new Visual('test.csv', 'Global Average Temperature from 1880', canvas, type);
     chart = await visual.createChart();
 
-    console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
-    console.log('makeTable chart: ', chart.data);
-
-    console.log('makeTable visual: ', visual.myChart.data);
+    console.log('makeTable visual: ', visual.chart.data);
 
     drawn = true;
-    response = 'below is '//the data of' + visual.getTitle();
+    response = 'below is '//the data of' + visual.title;
     return response;
 }
 
