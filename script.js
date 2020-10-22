@@ -136,7 +136,7 @@ function speakResponse(text) {
     const speech = new SpeechSynthesisUtterance();
     speech.text = text;
     synth.speak(speech);
-    outputBot.textContent = speech.text.charAt(0).toUpperCase() + speech.text.slice(1);;
+    outputBot.textContent = speech.text.charAt(0).toUpperCase() + speech.text.slice(1);
 
     setupInterface();
 

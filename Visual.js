@@ -12,6 +12,7 @@ class Visual {
         this.chart;
         this.add_median = false;
         this.add_mean = false;
+        this.drawn = new Drawn();
 
     }
 
@@ -23,11 +24,6 @@ class Visual {
                 labels: this.xs,
                 datasets: this.datasets,
             },
-            // options: {
-            //     animation: {
-            //         duration: 0
-            //     }
-            // }
         })
         chart.update();
         this.chart = chart;
@@ -47,7 +43,6 @@ class Visual {
             xs.push(year);
             let temp = cols[1];
             ys.push(parseFloat(temp) + 14);
-            // console.log(year, temp);
         });
 
         let result = { xs, ys };
@@ -72,48 +67,47 @@ class Visual {
 
     addDatasets(datasets) { this.datasets.push(datasets); }
 
-    async drawMedian(data) { await this.setMedianDataset(data); }
-
-    async drawMean(data) { await this.setMeanDataset(data); }
-
-    async setMedianDataset(data) {
-
-        let arr = [];
-        for (let i = 0; i < 200; i++) {
-            arr.push(data);
-        }
-
-        if (!this.add_median) {
-            this.chart.data.datasets.push({
-                label: 'Median',
-                data: arr,
-                backgroundColor: "brown",
-                borderColor: "brown",
-                borderWidth: 1,
-                fill: false
-            });
-            this.chart.update();
-            this.add_median = true;
+    async drawStatistics(stat) {
+        let stat_val = 0;
+        let drawn;
+        switch (stat) {
+            case 'median':
+                stat_val = this.median;
+                if (!this.drawn.median) {
+                    await this.setStatDataset(stat, stat_val);
+                    this.drawn.median = true;
+                }
+                break;
+            case 'mean':
+                stat_val = this.mean;
+                if (!this.drawn.mean) {
+                    await this.setStatDataset(stat, stat_val);
+                    this.drawn.mean = true;
+                }
+                break;
         }
     }
 
-    async setMeanDataset(data) {
+    async setStatDataset(stat, stat_val) {
         let arr = [];
-        for (let i = 0; i < 200; i++) {
-            arr.push(data);
+        for (let i = 0; i < this.xs.length; i++) {
+            arr.push(stat_val);
         }
-        if (!this.add_mean) {
-            this.chart.data.datasets.push({
-                label: 'Mean',
-                data: arr,
-                backgroundColor: "rice",
-                borderColor: "rice",
-                borderWidth: 1,
-                fill: false
-            });
-            this.chart.update();
-            this.add_mean = true;
-        }
+        this.chart.data.datasets.push({
+            label: stat.charAt(0).toUpperCase() + stat.slice(1),
+            data: arr,
+            backgroundColor: "brown",
+            borderColor: "brown",
+            borderWidth: 1,
+            fill: false
+        });
+        this.chart.update();
     }
+}
 
+class Drawn {
+    constructor() {
+        this.median = false;
+        this.mean = false;
+    }
 }
