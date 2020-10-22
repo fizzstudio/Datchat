@@ -58,14 +58,15 @@ function refreshCanvas() {
 }
 
 function refreshState() {
+    let date = new Date();
+    let timestamp = date.getTime()
     options.forEach((option) => {
         if (option.getState() != states.UNIFORM) {
             option.resetState();
-            option.addAnswer("Data has been restarted");
+            option.addAnswerRecord("Data has been restarted", timestamp);
         }
     });
 }
-
 
 const states = {
     UNASKED: 0,

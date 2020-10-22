@@ -5,7 +5,7 @@ const Option = class {
         this.callback = callback;
         this.type = type;
         this.occurrence = 0;
-        this.answers = [];
+        this.answerRecords = [];
         if (this.type == Option.Types.COMPUTATIONAL) {
             this.state = states.UNASKED;
         } else if (this.type == Option.Types.OPERATIONAL) {
@@ -14,16 +14,16 @@ const Option = class {
         // console.log("Option: ", this.state);
 
     }
+    addAnswerRecord(answer, timestamp) {
+        this.answerRecords.push({'answer': answer, 'timestamp': timestamp});
+    }
+
+    getAnswerRecords() {
+        return this.answerRecords;
+    }
+
     getContent() {
         return this.content;
-    }
-
-    addAnswer(answer) {
-        this.answers.push(answer);
-    }
-
-    getAnswers() {
-        return this.answers;
     }
 
     getState() {

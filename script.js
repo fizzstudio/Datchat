@@ -23,7 +23,6 @@ const outputBot = document.querySelector('.output-bot');
 
 
 let options = [];
-
 let negation_markers = ["n't", "not", "no", "never"];
 
 startBot();
@@ -63,7 +62,7 @@ function setupInterface() {
             text = text + " and the " + speech_pool[speech_pool.length - 1].getKeywords()[0];
         }
         speech.text = text;
-        synth.speak(speech);
+        // synth.speak(speech);
     }
 
 
@@ -78,6 +77,8 @@ function setupInterface() {
 }
 
 async function findResponse(text) {
+    let date = new Date();
+    let timestamp = date.getTime();
     let response = 'Sorry';
     let selections = keywordDetect(options, text);
     let negated = negationDetect(negation_markers, text);
@@ -92,7 +93,8 @@ async function findResponse(text) {
         if (response == "you need first to have a chart.") { // If answer = "you need...chart", reset option state to UNASKED
             selection.updateState(states.UNASKED);
         } else {
-            selection.addAnswer(response); // Get rid of meaningless answer "you need...chart"
+            selection.addAnswerRecord(response, timestamp); // Get rid of meaningless answer "you need...chart"
+            console.log('findResponse: ', selection.getAnswerRecords());
         }
         speech_pool.push(response);
     };
@@ -103,6 +105,7 @@ async function findResponse(text) {
             response += ", " + speech_pool[i];
         }
     }
+
     speakResponse(response);
 }
 
@@ -111,16 +114,17 @@ async function resultAnswer(option) {
     if (option.getState() !== states.UNIFORM) {
         option.updateState(states.ASKED);
         option.addCount();
-        if (compareAnswers(response, option.getAnswers())) {
+        if (compareAnswers(response, option.getAnswerRecords())) {
             response = "still, " + response;
         }
     }
+    
     return response;
 }
 
 function compareAnswers(response, history) {
     if (history.length > 0) {
-        if (history[history.length - 1].includes(response)) {
+        if (history[history.length - 1].answer.includes(response)) {
             return true; // current answer = last answer
         }
     }

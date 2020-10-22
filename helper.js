@@ -68,6 +68,5 @@ function LevenshteinDistance(a, b) {
             }
         }
     }
-
     return matrix[b.length][a.length];
 };
