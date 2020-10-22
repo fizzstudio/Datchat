@@ -20,7 +20,7 @@ async function makeAvg() {
     if (!drawn) {
         response = 'you need first to have a chart.';
     } else {
-        response = 'the average of the data is ' + visual.mean.toFixed(2);
+        response = 'the average of the data is ' + visual.stat_props.mean.toFixed(2);
         await visual.drawStatistics('mean');
         
         // visual.createChart();
@@ -33,7 +33,8 @@ async function makeMedian() {
     if (!drawn) {
         response = 'you need first to have a chart.';
     } else {
-        response = 'the median of the data is ' + visual.median.toFixed(2);
+        response = 'the median of the data is ' + visual.stat_props.median.toFixed(2);
+        console.log('makeMedian: ', visual.stat_props.median);
         await visual.drawStatistics('median');
     }
 
