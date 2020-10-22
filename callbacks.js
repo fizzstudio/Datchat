@@ -6,32 +6,38 @@ async function makeTable() {
     let type = 'line';
 
     visual = new Visual('test.csv', 'Global Average Temperature from 1880', canvas, type);
-    await visual.createChart();
+    chart = await visual.createChart();
+
+    console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
+    console.log('makeTable chart: ', chart.data);
+
+    console.log('makeTable visual: ', visual.myChart.data);
 
     drawn = true;
-    response = 'below is the data of ' + visual.getTitle();
+    response = 'below is '//the data of' + visual.getTitle();
     return response;
 }
 
-function makeAvg() {
+async function makeAvg() {
     let response = "average";
     if (!drawn) {
         response = 'you need first to have a chart.';
     } else {
         response = 'the average of the data is ' + visual.mean.toFixed(2);
-        visual.drawMean(visual.mean);
+        await visual.drawMean(visual.mean);
+        
         // visual.createChart();
     }
     return response;
 }
 
-function makeMedian() {
+async function makeMedian() {
     let response = "median";
     if (!drawn) {
         response = 'you need first to have a chart.';
     } else {
         response = 'the median of the data is ' + visual.median.toFixed(2);
-        visual.drawMedian(visual.median);
+        await visual.drawMedian(visual.median);
     }
 
     return response;

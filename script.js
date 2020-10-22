@@ -83,7 +83,7 @@ function setupInterface() {
     }
 }
 
-function findKeyword(text) {
+async function findKeyword(text) {
     let response = 'Sorry';
     let negated = false;
     let selections = [];
@@ -122,11 +122,11 @@ function findKeyword(text) {
         });
     });
 
-    // console.log("findKeyword selections:", selections);
+    console.log("findKeyword selections:", selections);
 
-    selections.forEach((selection) => {
+    for (let selection of selections) {
         if (!negated) {
-            response = resultAnswer(selection);
+            response = await resultAnswer(selection);
         } else {
             response = 'ok, no ' + keyword + '.';
         }
@@ -134,18 +134,20 @@ function findKeyword(text) {
             selection.updateState(states.UNASKED);
         } else {
             selection.addAnswer(response); // Get rid of meaningless answer "you need...chart"
+
         }
         speech_pool.push(response);
-        console.log("findKeyword counts: ", selection.getCount());
-        console.log("findKeyword option state: ", selection.getState());
-        console.log("findKeyword answers: ", selection.getAnswers());
+    };
 
-    });
+    console.log('UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU');
+    console.log('selections: ', speech_pool);
     if (selections.length > 0) {
         response = speech_pool[0];
         for (let i = 1; i < speech_pool.length; i++) {
             response += ", " + speech_pool[i];
+
         }
+
     }
 
     speakResponse(response);
@@ -153,6 +155,8 @@ function findKeyword(text) {
 
 async function resultAnswer(option) {
     let response = await option.callback();
+    console.log('YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY');
+    console.log('resultAnswer: ', response);
     if (option.getState() !== states.UNIFORM) {
         option.updateState(states.ASKED);
         option.addCount();
@@ -203,8 +207,8 @@ function onSpeechStart() {
     });
 }
 
-function onSpeechResult() {
-    recognition.addEventListener('result', (e) => {
+async function onSpeechResult() {
+    recognition.addEventListener('result', async (e) => {
         console.log('Result has been detected.');
 
         let last = e.results.length - 1;
@@ -212,7 +216,7 @@ function onSpeechResult() {
 
         outputYou.textContent = text.charAt(0).toUpperCase() + text.slice(1);;
 
-        findKeyword(text);
+        await findKeyword(text);
         console.log('Confidence: ' + e.results[0][0].confidence);
     });
 }

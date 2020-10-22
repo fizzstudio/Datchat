@@ -17,25 +17,23 @@ class Visual {
     }
 
     async createChart() {
-        let foo = '';
-        console.log('createChart: ');
         await this.initialize();
-        console.log("createChart median: ", this.median);
-        this.myChart = new Chart(this.canvas, {
+        let myChart = new Chart(this.canvas, {
             type: this.type,
             data: {
                 labels: this.xs,
                 datasets: this.datasets,
             },
-            options: {
-                animation: {
-                    duration: 0
-                }
-            }
+            // options: {
+            //     animation: {
+            //         duration: 0
+            //     }
+            // }
         })
-        this.myChart.update();
-        // this.setChart(myChart);
+        myChart.update();
+        this.setChart(myChart);
         console.log("createChart myChart: ", this.myChart);
+        return myChart;
     };
 
     async initialize() {
@@ -57,7 +55,7 @@ class Visual {
 
         let result = { xs, ys };
         let copy_result = { ...result };
-        
+
         this.setData(copy_result);
         this.setY(ys);
         this.setX(xs);
@@ -73,56 +71,33 @@ class Visual {
             fill: false
         }
         this.datasets[0] = (defaultDatasets);
-        return null;
     }
 
-    setChart(myChart) {
-        this.myChart = myChart;
-    }
+    setChart(myChart) { this.myChart = myChart; }
 
-    getChart() {
-        return this.myChart;
-    }
+    getChart() { return this.myChart; }
 
-    setData(data) {
-        this.data = data;
-    }
+    setData(data) { this.data = data; }
 
-    setDatasets(datasets) {
-        this.datasets = datasets;
-    }
+    setDatasets(datasets) { this.datasets = datasets; }
 
-    setY(arr) {
-        this.ys = arr;
-    };
+    setY(arr) { this.ys = arr; };
 
-    setX(arr) {
-        this.xs = arr;
-    };
+    setX(arr) { this.xs = arr; };
 
-    setMedian(arr) {
-        this.median = cal_median(arr);
-    };
+    setMedian(arr) { this.median = cal_median(arr); };
 
-    setMean(arr) {
-        this.mean = cal_mean(arr);
-    }
+    setMean(arr) { this.mean = cal_mean(arr); }
 
-    getMedian() {
-        return this.median;
-    };
+    getMedian() { return this.median; };
 
-    getTitle() {
-        return this.title;
-    }
+    getTitle() { return this.title; }
 
     async drawMedian(data) {
-        await this.initialize();
         await this.setMedianDataset(data);
     }
 
     async drawMean(data) {
-        await this.initialize();
         await this.setMeanDataset(data);
     }
 
@@ -146,8 +121,6 @@ class Visual {
 
             console.log("setmediandata: ", this.myChart);
             this.add_median = true;
-
-            // await this.createChart();
         }
     }
 
