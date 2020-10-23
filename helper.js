@@ -37,6 +37,26 @@ function keywordDetect(options, text) {
     return selections;
 }
 
+function compareAnswers(response, history) {
+    if (history.length > 0) {
+        if (history[history.length - 1].answer.includes(response)) {
+            return true; // current answer = last answer
+        }
+    }
+    return false;
+}
+
+async function resultAnswer(option) {
+    let response = await option.callback();
+    if (option.getState() !== states.UNIFORM) {
+        option.updateState(states.ASKED);
+        option.addCount();
+        if (compareAnswers(response, option.getAnswerRecords())) {
+            response = "still, " + response;
+        }
+    }
+    return response;
+}
 
 function LevenshteinDistance(a, b) {
     if (a.length == 0) return b.length;

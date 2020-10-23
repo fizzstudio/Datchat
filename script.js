@@ -29,7 +29,7 @@ startBot();
 
 function startBot() {
     document.addEventListener('DOMContentLoaded', () => {
-        options.push(new Option("You can request a chart first", ["chart", "table"], makeTable, Option.Types.COMPUTATIONAL));
+        options.push(new Option("You can request a chart first", ["table", "chart"], makeTable, Option.Types.COMPUTATIONAL));
         options.push(new Option("You can request the average", ['average', "avg", "mean"], reportAvg, Option.Types.COMPUTATIONAL));
         options.push(new Option("You can request the median", ["median"], reportMedian, Option.Types.OPERATIONAL));
         options.push(new Option("You can request the trend", ["trend", "tendency"], reportGlobalTrend, Option.Types.COMPUTATIONAL));
@@ -78,7 +78,7 @@ function setupInterface() {
     const synth = window.speechSynthesis;
     const speech = new SpeechSynthesisUtterance();
     speech.text = 'Please request a chart first, and then you can ask for its statistic properties. You can start over at anytime you want';
-    synth.speak(speech);
+    // synth.speak(speech);
 }
 
 async function findResponse(text) {
@@ -86,6 +86,7 @@ async function findResponse(text) {
     let timestamp = date.getTime();
     let response = 'Sorry';
     let selections = keywordDetect(options, text);
+    console.log('findResponse: ', selections);
     let negated = negationDetect(negation_markers, text);
     let speech_pool = [];
 
@@ -95,6 +96,7 @@ async function findResponse(text) {
         } else {
             response = 'ok, no ' + selection.keywords[0] + '.';
         }
+
         if (response == "you need first to have a chart.") { // If answer = "you need...chart", reset option state to UNASKED
             selection.updateState(states.UNASKED);
         } else {
@@ -106,34 +108,19 @@ async function findResponse(text) {
 
     if (selections.length > 0) {
         response = speech_pool[0];
+        console.log('selections[0]: ', selections[0]);
+        let x = selections[0];
+        if (selections.length > 1) {
+            if (x.getKeywords()[0] == 'table' && x.getAnswerRecords()[x.getAnswerRecords().length - 1].answer.includes('still')) {
+                speech_pool.shift();
+                response = speech_pool[0];
+            }
+        }
         for (let i = 1; i < speech_pool.length; i++) {
             response += ", " + speech_pool[i];
         }
     }
-
     speakResponse(response);
-}
-
-async function resultAnswer(option) {
-    let response = await option.callback();
-    if (option.getState() !== states.UNIFORM) {
-        option.updateState(states.ASKED);
-        option.addCount();
-        if (compareAnswers(response, option.getAnswerRecords())) {
-            response = "still, " + response;
-        }
-    }
-
-    return response;
-}
-
-function compareAnswers(response, history) {
-    if (history.length > 0) {
-        if (history[history.length - 1].answer.includes(response)) {
-            return true; // current answer = last answer
-        }
-    }
-    return false;
 }
 
 function speakResponse(text) {
@@ -144,7 +131,6 @@ function speakResponse(text) {
     outputBot.textContent = speech.text.charAt(0).toUpperCase() + speech.text.slice(1);
 
     setupInterface();
-
 }
 
 function operate() {

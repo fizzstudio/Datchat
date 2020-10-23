@@ -53,8 +53,8 @@ class Visual {
         let defaultDatasets = {
             label: this.title,
             data: this.ys,
-            backgroundColor: "rgba(255, 99, 132, 0.2)",
-            borderColor: "rgba(255, 99, 132, 1)",
+            backgroundColor: "rgba(255, 153, 102, 1)",
+            borderColor: "rgba(255, 153, 102, 1)",
             borderWidth: 1,
             fill: false
         }
@@ -80,19 +80,25 @@ class Visual {
 
     async setStatDataset(stat, stat_val) {
         let arr = [];
+        let color = random_rgba();
         for (let i = 0; i < this.xs.length; i++) {
             arr.push(stat_val);
         }
         this.chart.data.datasets.push({
             label: stat.charAt(0).toUpperCase() + stat.slice(1),
             data: arr,
-            backgroundColor: "brown",
-            borderColor: "brown",
+            backgroundColor: color,
+            borderColor: color,
             borderWidth: 1,
             fill: false
         });
         this.chart.update();
     }
+}
+
+function random_rgba() {
+    var o = Math.round, r = Math.random, t = 20, s = 200;
+    return 'rgba(' + o(r()*t) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + r().toFixed(1) + ')';
 }
 
 class Drawn {
