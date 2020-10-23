@@ -31,8 +31,8 @@ function startBot() {
     document.addEventListener('DOMContentLoaded', () => {
         options.push(new Option("You can request a chart first", ["chart", "table"], makeTable, Option.Types.COMPUTATIONAL));
         options.push(new Option("You can request the average", ['average', "avg", "mean"], reportAvg, Option.Types.COMPUTATIONAL));
-        options.push(new Option("You can request the median", ["median"], reportMedian, Option.Types.COMPUTATIONAL));
-        options.push(new Option("You can request the trend", ["trend", "tendency"], reportTrend, Option.Types.COMPUTATIONAL));
+        options.push(new Option("You can request the median", ["median"], reportMedian, Option.Types.OPERATIONAL));
+        options.push(new Option("You can request the trend", ["trend", "tendency"], reportGlobalTrend, Option.Types.COMPUTATIONAL));
         options.push(new Option("Options are done. You can start over", ['restart'], startover, Option.Types.OPERATIONAL));
 
         setupInterface();
@@ -42,39 +42,43 @@ function startBot() {
 
 
 function setupInterface() {
-    let silence = 0;
-    let speech_pool = [];
-    for (let i = 0; i < options.length; i++) {
-        if (options[i].getState() === states.UNASKED) {
-            speech_pool.push(options[i]);
-        } else if (options[i].getState() === states.ASKED) {
-            silence += 1;
-        }
+    // let silence = 0;
+    // let speech_pool = [];
+    // for (let i = 0; i < options.length; i++) {
+    //     if (options[i].getState() === states.UNASKED) {
+    //         speech_pool.push(options[i]);
+    //     } else if (options[i].getState() === states.ASKED) {
+    //         silence += 1;
+    //     }
 
-    }
+    // }
+    // const synth = window.speechSynthesis;
+    // const speech = new SpeechSynthesisUtterance();
+    // if (speech_pool.length != 0) {
+    //     let text = speech_pool[0].getContent();
+    //     for (let i = 1; i < speech_pool.length - 1; i++) {
+    //         text = text + ", the " + speech_pool[i].getKeywords()[0];
+    //     }
+    //     if (speech_pool.length > 1) {
+    //         text = text + " and the " + speech_pool[speech_pool.length - 1].getKeywords()[0];
+    //     }
+    //     speech.text = text;
+    //     // synth.speak(speech);
+    // }
+
+
+    // if (silence == options.length - 1 && ignored == false) {
+    //     ignored = true;
+    //     const synth = window.speechSynthesis;
+    //     const speech = new SpeechSynthesisUtterance();
+    //     speech.text = options[3].getContent();
+
+    //     synth.speak(speech);
+    // }
     const synth = window.speechSynthesis;
     const speech = new SpeechSynthesisUtterance();
-    if (speech_pool.length != 0) {
-        let text = speech_pool[0].getContent();
-        for (let i = 1; i < speech_pool.length - 1; i++) {
-            text = text + ", the " + speech_pool[i].getKeywords()[0];
-        }
-        if (speech_pool.length > 1) {
-            text = text + " and the " + speech_pool[speech_pool.length - 1].getKeywords()[0];
-        }
-        speech.text = text;
-        // synth.speak(speech);
-    }
-
-
-    if (silence == options.length - 1 && ignored == false) {
-        ignored = true;
-        const synth = window.speechSynthesis;
-        const speech = new SpeechSynthesisUtterance();
-        speech.text = options[3].getContent();
-
-        synth.speak(speech);
-    }
+    speech.text = 'Please request a chart first, and then you can ask for its statistic properties. You can start over at anytime you want';
+    synth.speak(speech);
 }
 
 async function findResponse(text) {
@@ -119,7 +123,7 @@ async function resultAnswer(option) {
             response = "still, " + response;
         }
     }
-    
+
     return response;
 }
 

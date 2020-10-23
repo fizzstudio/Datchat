@@ -6,10 +6,9 @@ class Visual {
         this.type = type;
         this.ys = [];
         this.xs = [];
+        this.pairs = [];
         this.datasets = [];
         this.chart;
-        this.add_median = false;
-        this.add_mean = false;
         this.drawn = new Drawn();
 
     }
@@ -31,20 +30,25 @@ class Visual {
     async initialize() {
         let xs = [];
         let ys = [];
+        let pairs = [];
         let response = await fetch(this.addr);
         let data = await response.text();
 
         let table = data.split('\n').slice(1);
+        let x = 0;
         table.forEach(elt => {
             let cols = elt.split(',');
             let year = cols[0];
             xs.push(year);
             let temp = cols[1];
             ys.push(parseFloat(temp) + 14);
+            pairs.push([x, parseFloat(temp) + 14]);
+            x++;
         });
 
         this.ys = ys;
         this.xs = xs;
+        this.pairs = pairs;
 
         let defaultDatasets = {
             label: this.title,
@@ -54,10 +58,8 @@ class Visual {
             borderWidth: 1,
             fill: false
         }
-        this.addDatasets(defaultDatasets);
+        this.datasets.push(defaultDatasets);
     }
-
-    addDatasets(datasets) { this.datasets.push(datasets); }
 
     async drawStatistics(stat, stat_val) {
         switch (stat) {

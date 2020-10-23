@@ -34,20 +34,24 @@ async function reportMedian() {
     } else {
         let median = ss.median(visual.ys);
         response = 'the median of the data is ' + median.toFixed(2);
-        // console.log('makeMedian: ', visual.stat_props.median);
         await visual.drawStatistics('median', median);
     }
     return response;
 }
 
-async function reportTrend() {
+async function reportGlobalTrend() {
     let response = "";
     if (!drawn) {
         response = 'you need first to have a chart.';
     } else {
-        response = 'the median of the data is ' + visual.stat_props.median.toFixed(2);
-        console.log('makeMedian: ', visual.stat_props.median);
-        await visual.drawStatistics('median');
+        let lg = ss.linearRegression(visual.pairs);
+        if (lg.m > 0) {
+            response = 'this data set has an overall increasing trend';
+        } else if (lg.m = 0) {
+            response = 'this data set remains stable';
+        } else {
+            response = 'this data set has an overall decreasing trend';
+        }
     }
     return response;
 }
