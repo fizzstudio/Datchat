@@ -1,9 +1,11 @@
+// // import fs from './fs';
+
 // const config = {
 //     inputSize: 9,
 //     outputSize: 9,
 //     binaryThresh: 0.5,
 //     hiddenLayers: [9, 9], // array of ints for the sizes of the hidden layers in the network
-//     activation: 'sigmoid', // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh'],
+//     activation: 'relu', // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh'],
 //     leakyReluAlpha: 0.01, // supported for activation type 'leaky-relu'
 // };
 
@@ -22,6 +24,7 @@
 // const lstm = new brain.recurrent.LSTM(config);
 // const result = lstm.train(trainingData, {
 //     iterations: 1000,
+//     learningRate: 0.1,
 //     log: (details) => console.log(details),
 //     errorThresh: 0.011,
 // });
@@ -40,3 +43,5 @@
 // console.log('run 4 standard:' + run4);
 // console.log('run 5 average:' + run5);
 // console.log('run 6 max:' + run6);
+
+// lstm.toFunction();
