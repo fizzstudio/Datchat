@@ -16,8 +16,5 @@
     "url": "https://github.com/fizzstudio/Datchat/issues"
   },
   "homepage": "https://github.com/fizzstudio/Datchat#readme",
-  "dependencies": {
-    "brain.js": "^2.0.0-beta.2",
-    "natural-brain": "^0.3.2"
-  }
+  "dependencies": {}
 }
