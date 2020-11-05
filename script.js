@@ -78,7 +78,7 @@ function setupInterface() {
     const synth = window.speechSynthesis;
     const speech = new SpeechSynthesisUtterance();
     speech.text = 'Please request a chart first, and then you can ask for its statistic properties. You can start over at anytime you want';
-    synth.speak(speech);
+    // synth.speak(speech);
 }
 
 async function findResponse(text) {
