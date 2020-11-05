@@ -10,11 +10,13 @@
     "type": "git",
     "url": "git+https://github.com/fizzstudio/Datchat.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Capric Guan",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/fizzstudio/Datchat/issues"
   },
   "homepage": "https://github.com/fizzstudio/Datchat#readme",
-  "dependencies": {}
+  "dependencies": {
+    "natural-brain": "^0.3.2"
+  }
 }
