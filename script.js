@@ -78,7 +78,7 @@ function setupInterface() {
     const synth = window.speechSynthesis;
     const speech = new SpeechSynthesisUtterance();
     speech.text = 'Please request a chart first, and then you can ask for its statistic properties. You can start over at anytime you want';
-    // synth.speak(speech);
+    synth.speak(speech);
 }
 
 async function findResponse(text) {
@@ -101,7 +101,9 @@ async function findResponse(text) {
             selection.updateState(states.UNASKED);
         } else {
             selection.addAnswerRecord(response, timestamp); // Get rid of meaningless answer "you need...chart"
-            console.log('findResponse: ', selection.getAnswerRecords());
+            console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+            console.log('findResponse answer record: ', selection.getAnswerRecords());
+            
         }
         speech_pool.push(response);
     };
@@ -116,9 +118,13 @@ async function findResponse(text) {
                 response = speech_pool[0];
             }
         }
-        for (let i = 1; i < speech_pool.length; i++) {
+        for (let i = 1; i < speech_pool.length - 1; i++) {
             response += ", " + speech_pool[i];
         }
+        if (speech_pool.length > 1){
+            response = response + ", and " + speech_pool[speech_pool.length - 1];
+        }
+        
     }
     speakResponse(response);
 }

@@ -98,7 +98,7 @@ class Visual {
 
 function random_rgba() {
     var o = Math.round, r = Math.random, t = 20, s = 200;
-    return 'rgba(' + o(r()*t) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + r().toFixed(1) + ')';
+    return 'rgba(' + o(r() * t) + ',' + o(r() * s) + ',' + o(r() * s) + ',' + r().toFixed(1) + ')';
 }
 
 class Drawn {

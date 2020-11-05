@@ -1,6 +1,5 @@
 
 async function makeTable() {
-    refreshCanvas();
     let response = '';
     let canvas = document.getElementById('myChart').getContext('2d');
     let type = 'line';
@@ -11,7 +10,7 @@ async function makeTable() {
     console.log('makeTable visual: ', visual.chart.data);
 
     drawn = true;
-    response = 'below is '//the data of' + visual.title;
+    response = 'below is the table'//the data of' + visual.title;
     return response;
 }
 
