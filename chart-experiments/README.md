@@ -1,2 +1,0 @@
-# charts
- simple chart experiments
