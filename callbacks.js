@@ -38,6 +38,18 @@ async function reportMedian() {
     return response;
 }
 
+async function reportStd() {
+    let response = "";
+    if (!drawn) {
+        response = 'you need first to have a chart.';
+    } else {
+        let std = ss.standardDeviation(visual.ys);
+        response = 'the standard deviation of the data is ' + std.toFixed(2);
+        console.log('std', response)
+    }
+    return response;
+}
+
 async function reportGlobalTrend() {
     let response = "";
     if (!drawn) {

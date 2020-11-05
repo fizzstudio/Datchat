@@ -3,6 +3,7 @@
 var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
 var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList
 var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent
+let text = '';
 let visual = undefined;
 let chart = undefined;
 let canvas = document.getElementById('myChart').getContext('2d');
@@ -34,6 +35,7 @@ function startBot() {
         options.push(new Option("You can request the median", ["median"], reportMedian, Option.Types.OPERATIONAL));
         options.push(new Option("You can request the trend", ["trend", "tendency"], reportGlobalTrend, Option.Types.COMPUTATIONAL));
         options.push(new Option("Options are done. You can start over", ['restart'], startover, Option.Types.OPERATIONAL));
+        options.push(new Option("You can request the standard deviation", ["std", "deviation"], reportStd, Option.Types.COMPUTATIONAL));
 
         setupInterface();
         operate();
@@ -42,39 +44,6 @@ function startBot() {
 
 
 function setupInterface() {
-    // let silence = 0;
-    // let speech_pool = [];
-    // for (let i = 0; i < options.length; i++) {
-    //     if (options[i].getState() === states.UNASKED) {
-    //         speech_pool.push(options[i]);
-    //     } else if (options[i].getState() === states.ASKED) {
-    //         silence += 1;
-    //     }
-
-    // }
-    // const synth = window.speechSynthesis;
-    // const speech = new SpeechSynthesisUtterance();
-    // if (speech_pool.length != 0) {
-    //     let text = speech_pool[0].getContent();
-    //     for (let i = 1; i < speech_pool.length - 1; i++) {
-    //         text = text + ", the " + speech_pool[i].getKeywords()[0];
-    //     }
-    //     if (speech_pool.length > 1) {
-    //         text = text + " and the " + speech_pool[speech_pool.length - 1].getKeywords()[0];
-    //     }
-    //     speech.text = text;
-    //     // synth.speak(speech);
-    // }
-
-
-    // if (silence == options.length - 1 && ignored == false) {
-    //     ignored = true;
-    //     const synth = window.speechSynthesis;
-    //     const speech = new SpeechSynthesisUtterance();
-    //     speech.text = options[3].getContent();
-
-    //     synth.speak(speech);
-    // }
     const synth = window.speechSynthesis;
     const speech = new SpeechSynthesisUtterance();
     speech.text = 'Please request a chart first, and then you can ask for its statistic properties. You can start over at anytime you want';
@@ -86,7 +55,7 @@ async function findResponse(text) {
     let timestamp = date.getTime();
     let response = 'Sorry';
     let selections = keywordDetect(options, text);
-    console.log('findResponse: ', selections);
+    // console.log('findResponse: ', selections);
     let negated = negationDetect(negation_markers, text);
     let speech_pool = [];
 
@@ -101,8 +70,8 @@ async function findResponse(text) {
             selection.updateState(states.UNASKED);
         } else {
             selection.addAnswerRecord(response, timestamp); // Get rid of meaningless answer "you need...chart"
-            console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-            console.log('findResponse answer record: ', selection.getAnswerRecords());
+            // console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+            // console.log('findResponse answer record: ', selection.getAnswerRecords());
             
         }
         speech_pool.push(response);
@@ -110,7 +79,7 @@ async function findResponse(text) {
 
     if (selections.length > 0) {
         response = speech_pool[0];
-        console.log('selections[0]: ', selections[0]);
+        // console.log('selections[0]: ', selections[0]);
         let x = selections[0];
         if (selections.length > 1) {
             if (x.getKeywords()[0] == 'table' && x.getAnswerRecords()[x.getAnswerRecords().length - 1].answer.includes('still')) {
@@ -127,13 +96,14 @@ async function findResponse(text) {
         
     }
     speakResponse(response);
+    return response;
 }
 
 function speakResponse(text) {
     const synth = window.speechSynthesis;
     const speech = new SpeechSynthesisUtterance();
     speech.text = text;
-    synth.speak(speech);
+    // synth.speak(speech);
     outputBot.textContent = speech.text.charAt(0).toUpperCase() + speech.text.slice(1);
 
     setupInterface();
@@ -155,27 +125,27 @@ function onClick() {
 
 function onSpeechStart() {
     recognition.addEventListener('speechstart', () => {
-        console.log('Speech has been detected.');
+        // console.log('Speech has been detected.');
     });
 }
 
 async function onSpeechResult() {
     recognition.addEventListener('result', async (e) => {
-        console.log('Result has been detected.');
+        // console.log('Result has been detected.');
 
         let last = e.results.length - 1;
-        let text = e.results[last][0].transcript.toLowerCase();
+        text = e.results[last][0].transcript.toLowerCase();
 
         outputYou.textContent = text.charAt(0).toUpperCase() + text.slice(1);;
 
         await findResponse(text);
-        console.log('Confidence: ' + e.results[0][0].confidence);
+        // console.log('Confidence: ' + e.results[0][0].confidence);
     });
 }
 
 function onSpeechEnd() {
     recognition.addEventListener('speechend', () => {
-        console.log("Speech has ended");
+        // console.log("Speech has ended");
         recognition.stop();
     });
 }
