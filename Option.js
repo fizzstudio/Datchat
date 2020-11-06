@@ -1,6 +1,6 @@
 const Option = class {
-    constructor(content, keywords, callback, type) {
-        this.content = content;
+    constructor(keywords, callback, type) {
+        // this.content = content;
         this.keywords = keywords;
         this.callback = callback;
         this.type = type;
@@ -22,9 +22,9 @@ const Option = class {
         return this.answerRecords;
     }
 
-    getContent() {
-        return this.content;
-    }
+    // getContent() {
+    //     return this.content;
+    // }
 
     getState() {
         return this.state;

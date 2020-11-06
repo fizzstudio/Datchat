@@ -24,5 +24,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             question: 'what is the trend',
             answer: await findResponse('what is the trend')
         });
-        console.log('options', options)
+    console.log('findResponse',
+        {
+            question: 'what is the greatest value',
+            answer: await findResponse('what is the greatest value')
+        });
+    console.log('findResponse',
+        {
+            question: 'what is the minimum value',
+            answer: await findResponse('what is the min value')
+        });
+    console.log('options', options)
 });

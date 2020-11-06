@@ -45,7 +45,29 @@ async function reportStd() {
     } else {
         let std = ss.standardDeviation(visual.ys);
         response = 'the standard deviation of the data is ' + std.toFixed(2);
-        console.log('std', response)
+    }
+    return response;
+}
+
+async function reportMax() {
+    let response = "";
+    if (!drawn) {
+        response = 'you need first to have a chart.';
+    } else {
+        let max = ss.extent(visual.ys)[1];
+        response = 'the maximum of the data is ' + max.toFixed(2);
+    }
+    return response;
+}
+
+async function reportMin() {
+
+    let response = "";
+    if (!drawn) {
+        response = 'you need first to have a chart.';
+    } else {
+        let min = ss.extent(visual.ys)[0];
+        response = 'the minimum of the data is ' + min.toFixed(2);
     }
     return response;
 }

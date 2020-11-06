@@ -30,12 +30,14 @@ startBot();
 
 function startBot() {
     document.addEventListener('DOMContentLoaded', () => {
-        options.push(new Option("You can request a chart first", ["table", "chart"], makeTable, Option.Types.COMPUTATIONAL));
-        options.push(new Option("You can request the average", ['average', "avg", "mean"], reportAvg, Option.Types.COMPUTATIONAL));
-        options.push(new Option("You can request the median", ["median"], reportMedian, Option.Types.OPERATIONAL));
-        options.push(new Option("You can request the trend", ["trend", "tendency"], reportGlobalTrend, Option.Types.COMPUTATIONAL));
-        options.push(new Option("Options are done. You can start over", ['restart'], startover, Option.Types.OPERATIONAL));
-        options.push(new Option("You can request the standard deviation", ["std", "deviation"], reportStd, Option.Types.COMPUTATIONAL));
+        options.push(new Option(["table", "chart"], makeTable, Option.Types.COMPUTATIONAL));
+        options.push(new Option(['average', "avg", "mean"], reportAvg, Option.Types.COMPUTATIONAL));
+        options.push(new Option(["median"], reportMedian, Option.Types.OPERATIONAL));
+        options.push(new Option(["trend", "tendency"], reportGlobalTrend, Option.Types.COMPUTATIONAL));
+        options.push(new Option(['restart'], startover, Option.Types.OPERATIONAL));
+        options.push(new Option(["std", "deviation"], reportStd, Option.Types.COMPUTATIONAL));
+        options.push(new Option(["max", 'greatest', 'largest'], reportMax, Option.Types.COMPUTATIONAL));
+        options.push(new Option(["min", 'smallest', 'least'], reportMin, Option.Types.COMPUTATIONAL));
 
         setupInterface();
         operate();
@@ -46,14 +48,14 @@ function startBot() {
 function setupInterface() {
     const synth = window.speechSynthesis;
     const speech = new SpeechSynthesisUtterance();
-    speech.text = 'Please request a chart first, and then you can ask for its statistic properties. You can start over at anytime you want';
+    speech.text = 'Hey Capric, please request a chart first, and then you can ask for its statistic properties. You can start over at anytime you want';
     // synth.speak(speech);
 }
 
 async function findResponse(text) {
     let date = new Date();
     let timestamp = date.getTime();
-    let response = 'Sorry';
+    let response = 'Sorry Capric';
     let selections = keywordDetect(options, text);
     // console.log('findResponse: ', selections);
     let negated = negationDetect(negation_markers, text);
@@ -72,7 +74,7 @@ async function findResponse(text) {
             selection.addAnswerRecord(response, timestamp); // Get rid of meaningless answer "you need...chart"
             // console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
             // console.log('findResponse answer record: ', selection.getAnswerRecords());
-            
+
         }
         speech_pool.push(response);
     };
@@ -90,10 +92,10 @@ async function findResponse(text) {
         for (let i = 1; i < speech_pool.length - 1; i++) {
             response += ", " + speech_pool[i];
         }
-        if (speech_pool.length > 1){
+        if (speech_pool.length > 1) {
             response = response + ", and " + speech_pool[speech_pool.length - 1];
         }
-        
+
     }
     speakResponse(response);
     return response;
