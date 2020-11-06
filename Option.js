@@ -1,8 +1,6 @@
 const Option = class {
-    constructor(keywords, callback, type) {
-        // this.content = content;
+    constructor(keywords, type) {
         this.keywords = keywords;
-        this.callback = callback;
         this.type = type;
         this.occurrence = 0;
         this.answerRecords = [];
@@ -11,8 +9,6 @@ const Option = class {
         } else if (this.type == Option.Types.OPERATIONAL) {
             this.state = states.UNIFORM;
         }
-        // console.log("Option: ", this.state);
-
     }
     addAnswerRecord(answer, timestamp) {
         this.answerRecords.push({'answer': answer, 'timestamp': timestamp});
@@ -21,10 +17,6 @@ const Option = class {
     getAnswerRecords() {
         return this.answerRecords;
     }
-
-    // getContent() {
-    //     return this.content;
-    // }
 
     getState() {
         return this.state;

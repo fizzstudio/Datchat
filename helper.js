@@ -47,7 +47,7 @@ function compareAnswers(response, history) {
 }
 
 async function resultAnswer(option) {
-    let response = await option.callback();
+    let response = await statAction(option.keywords[0]);
     if (option.getState() !== states.UNIFORM) {
         option.updateState(states.ASKED);
         option.addCount();

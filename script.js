@@ -30,14 +30,16 @@ startBot();
 
 function startBot() {
     document.addEventListener('DOMContentLoaded', () => {
-        options.push(new Option(["table", "chart"], makeTable, Option.Types.COMPUTATIONAL));
-        options.push(new Option(['average', "avg", "mean"], reportAvg, Option.Types.COMPUTATIONAL));
-        options.push(new Option(["median"], reportMedian, Option.Types.OPERATIONAL));
-        options.push(new Option(["trend", "tendency"], reportGlobalTrend, Option.Types.COMPUTATIONAL));
-        options.push(new Option(['restart'], startover, Option.Types.OPERATIONAL));
-        options.push(new Option(["std", "deviation"], reportStd, Option.Types.COMPUTATIONAL));
-        options.push(new Option(["max", 'greatest', 'largest'], reportMax, Option.Types.COMPUTATIONAL));
-        options.push(new Option(["min", 'smallest', 'least'], reportMin, Option.Types.COMPUTATIONAL));
+        options.push(new Option(["chart", "table"], Option.Types.COMPUTATIONAL));
+        options.push(new Option(['average', "avg", "mean"], Option.Types.COMPUTATIONAL));
+        options.push(new Option(["median"], Option.Types.OPERATIONAL));
+        options.push(new Option(["trend", "tendency"], Option.Types.COMPUTATIONAL));
+        options.push(new Option(['restart'], Option.Types.OPERATIONAL));
+        options.push(new Option(["std", "deviation"], Option.Types.COMPUTATIONAL));
+        options.push(new Option(["max", 'greatest', 'largest'], Option.Types.COMPUTATIONAL));
+        options.push(new Option(["min", 'smallest', 'least'], Option.Types.COMPUTATIONAL));
+        options.push(new Option(["range"], Option.Types.COMPUTATIONAL));
+        options.push(new Option(["variance"], Option.Types.COMPUTATIONAL));
 
         setupInterface();
         operate();

@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('findResponse',
         {
-            question: 'give me a cable',
-            answer: await findResponse('give me a cable')
+            question: 'give me a cart',
+            answer: await findResponse('give me a cart')
         });
     console.log('findResponse',
         {
@@ -33,6 +33,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         {
             question: 'what is the minimum value',
             answer: await findResponse('what is the min value')
+        });
+    // console.log('findResponse',
+    //     {
+    //         question: 'please restart',
+    //         answer: await findResponse('please restart')
+    //     });
+    console.log('findResponse',
+        {
+            question: 'tell me the range',
+            answer: await findResponse('tell me the range')
+        });
+    console.log('findResponse',
+        {
+            question: 'show me the variance',
+            answer: await findResponse('show me the variance')
         });
     console.log('options', options)
 });
