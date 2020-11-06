@@ -14,7 +14,7 @@ const trainingData = [
 
 const net = new brain.recurrent.LSTM();
 const result = net.train(trainingData, {
-    iterations: 100,
+    iterations: 10,
     // learningRate: 0.1,
     log: (details) => console.log(details),
     // errorThresh: 0.011,
@@ -36,11 +36,8 @@ console.log('run 5 non-range:' + run5);
 console.log('run 6 non-range:' + run6);
 
 const fs = require('fs');
-// const json = net.toJSON();
-// console.log(json);
-// fs.writeFileSync('trained-net.js', `export default ${ net.toFunction().toString() };`);
-// net.fromJSON(json);
 
-const json = net.toJSON()
-// write to file system
-fs.writeFileSync('trained-net.json', json);
+const json = net.toJSON();
+const jsonStr = JSON.stringify(json);
+
+fs.writeFileSync('./trained-net.json', jsonStr, 'utf8');

@@ -50,4 +50,5 @@ document.addEventListener('DOMContentLoaded', async () => {
             answer: await findResponse('show me the variance')
         });
     console.log('options', options)
+
 });
