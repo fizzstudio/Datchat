@@ -3,6 +3,7 @@
 var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
 var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList
 var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent
+let text = '';
 let visual = undefined;
 let chart = undefined;
 let canvas = document.getElementById('myChart').getContext('2d');
@@ -23,17 +24,22 @@ const outputBot = document.querySelector('.output-bot');
 
 
 let options = [];
-
 let negation_markers = ["n't", "not", "no", "never"];
 
 startBot();
 
 function startBot() {
     document.addEventListener('DOMContentLoaded', () => {
-        options.push(new Option("You can request a chart first", ["chart", "table"], makeTable, Option.Types.COMPUTATIONAL));
-        options.push(new Option("You can request the average", ['average', "avg", "mean"], makeAvg, Option.Types.COMPUTATIONAL));
-        options.push(new Option("You can request the median", ["median"], makeMedian, Option.Types.COMPUTATIONAL));
-        options.push(new Option("Options are done. You can start over", ['restart'], startover, Option.Types.OPERATIONAL));
+        options.push(new Option(["chart", "table"], Option.Types.COMPUTATIONAL));
+        options.push(new Option(['average', "avg", "mean"], Option.Types.COMPUTATIONAL));
+        options.push(new Option(["median"], Option.Types.OPERATIONAL));
+        options.push(new Option(["trend", "tendency"], Option.Types.COMPUTATIONAL));
+        options.push(new Option(['restart'], Option.Types.OPERATIONAL));
+        options.push(new Option(["std", "deviation"], Option.Types.COMPUTATIONAL));
+        options.push(new Option(["max", 'greatest', 'largest'], Option.Types.COMPUTATIONAL));
+        options.push(new Option(["min", 'smallest', 'least'], Option.Types.COMPUTATIONAL));
+        options.push(new Option(["range"], Option.Types.COMPUTATIONAL));
+        options.push(new Option(["variance"], Option.Types.COMPUTATIONAL));
 
         setupInterface();
         operate();
@@ -42,145 +48,69 @@ function startBot() {
 
 
 function setupInterface() {
-    let silence = 0;
-    let speech_pool = [];
-    for (let i = 0; i < options.length; i++) {
-        const synth = window.speechSynthesis;
-        const speech = new SpeechSynthesisUtterance();
-
-        if (options[i].getState() === states.UNASKED) {
-            speech_pool.push(options[i]);
-            // console.log("setUpInterface", options[i].getKeywords());
-            // console.log("setUpInterface option state", options[i].getState());
-            // console.log("setUpInterface speech_pool: ", speech_pool);
-        } else if (options[i].getState() === states.ASKED) {
-            silence += 1;
-        }
-
-    }
     const synth = window.speechSynthesis;
     const speech = new SpeechSynthesisUtterance();
-    if (speech_pool.length != 0) {
-        let text = speech_pool[0].getContent();
-        for (let i = 1; i < speech_pool.length - 1; i++) {
-            text = text + ", the " + speech_pool[i].getKeywords()[0];
-        }
-        if (speech_pool.length > 1) {
-            text = text + " and the " + speech_pool[speech_pool.length - 1].getKeywords()[0];
-        }
-        speech.text = text;
-        // synth.speak(speech);
-    }
-
-    // console.log("setupInterface silence: ", silence);
-    if (silence == options.length - 1 && ignored == false) {
-        ignored = true;
-        const synth = window.speechSynthesis;
-        const speech = new SpeechSynthesisUtterance();
-        speech.text = options[3].getContent();
-
-        synth.speak(speech);
-    }
+    speech.text = 'Hey Capric, please request a chart first, and then you can ask for its statistic properties. You can start over at anytime you want';
+    // synth.speak(speech);
 }
 
-function findKeyword(text) {
-    let response = 'Sorry';
-    let negated = false;
-    let selections = [];
+async function findResponse(text) {
+    let date = new Date();
+    let timestamp = date.getTime();
+    let response = 'Sorry Capric';
+    let selections = keywordDetect(options, text);
+    // console.log('findResponse: ', selections);
+    let negated = negationDetect(negation_markers, text);
     let speech_pool = [];
 
-    let split_text = text.split(" ");
-    console.log("findKeyword split_text: ", split_text);
-
-    negation_markers.forEach((negator) => {
-        if (text.includes(negator)) {
-            negated = true;
-        }
-    });
-
-    options.forEach((option) => {
-        option.keywords.forEach((keyword) => {
-
-            let contain = false;
-            split_text.forEach(word => {
-                if (word.includes(keyword)) {
-                    contain = true;
-                } else if (LevenshteinDistance(word, keyword) < 2) {
-                    contain = true;
-                }
-            })
-
-            if (contain) {
-                selections.push(option);
-                if (keyword == "table" || keyword == "chart") {
-                    if (selections.length > 1) {
-                        let popped = selections.pop();
-                        selections.unshift(popped);             // make sure making table always happens first
-                    }
-                }
-            }
-        });
-    });
-
-    // console.log("findKeyword selections:", selections);
-
-    selections.forEach((selection) => {
+    for (let selection of selections) {
         if (!negated) {
-            response = resultAnswer(selection);
+            response = await resultAnswer(selection);
         } else {
-            response = 'ok, no ' + keyword + '.';
+            response = 'ok, no ' + selection.keywords[0] + '.';
         }
+
         if (response == "you need first to have a chart.") { // If answer = "you need...chart", reset option state to UNASKED
             selection.updateState(states.UNASKED);
         } else {
-            selection.addAnswer(response); // Get rid of meaningless answer "you need...chart"
+            selection.addAnswerRecord(response, timestamp); // Get rid of meaningless answer "you need...chart"
+            // console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+            // console.log('findResponse answer record: ', selection.getAnswerRecords());
+
         }
         speech_pool.push(response);
-        console.log("findKeyword counts: ", selection.getCount());
-        console.log("findKeyword option state: ", selection.getState());
-        console.log("findKeyword answers: ", selection.getAnswers());
+    };
 
-    });
     if (selections.length > 0) {
         response = speech_pool[0];
-        for (let i = 1; i < speech_pool.length; i++) {
+        // console.log('selections[0]: ', selections[0]);
+        let x = selections[0];
+        if (selections.length > 1) {
+            if (x.getKeywords()[0] == 'table' && x.getAnswerRecords()[x.getAnswerRecords().length - 1].answer.includes('still')) {
+                speech_pool.shift();
+                response = speech_pool[0];
+            }
+        }
+        for (let i = 1; i < speech_pool.length - 1; i++) {
             response += ", " + speech_pool[i];
         }
-    }
+        if (speech_pool.length > 1) {
+            response = response + ", and " + speech_pool[speech_pool.length - 1];
+        }
 
+    }
     speakResponse(response);
-}
-
-function resultAnswer(option) {
-    let response = option.callback();
-    if (option.getState() !== states.UNIFORM) {
-        option.updateState(states.ASKED);
-        option.addCount();
-        if (compareAnswers(response, option.getAnswers())) {
-            response = "still, " + response;
-        }
-    }
     return response;
-}
-
-function compareAnswers(response, history) {
-    if (history.length > 0) {
-        if (history[history.length - 1].includes(response)) {
-            return true; // current answer = last answer
-        }
-    }
-    return false;
 }
 
 function speakResponse(text) {
     const synth = window.speechSynthesis;
     const speech = new SpeechSynthesisUtterance();
     speech.text = text;
-    synth.speak(speech);
-    outputBot.textContent = speech.text.charAt(0).toUpperCase() + speech.text.slice(1);;
+    // synth.speak(speech);
+    outputBot.textContent = speech.text.charAt(0).toUpperCase() + speech.text.slice(1);
 
     setupInterface();
-
 }
 
 function operate() {
@@ -199,27 +129,27 @@ function onClick() {
 
 function onSpeechStart() {
     recognition.addEventListener('speechstart', () => {
-        console.log('Speech has been detected.');
+        // console.log('Speech has been detected.');
     });
 }
 
-function onSpeechResult() {
-    recognition.addEventListener('result', (e) => {
-        console.log('Result has been detected.');
+async function onSpeechResult() {
+    recognition.addEventListener('result', async (e) => {
+        // console.log('Result has been detected.');
 
         let last = e.results.length - 1;
-        let text = e.results[last][0].transcript.toLowerCase();
+        text = e.results[last][0].transcript.toLowerCase();
 
         outputYou.textContent = text.charAt(0).toUpperCase() + text.slice(1);;
 
-        findKeyword(text);
-        console.log('Confidence: ' + e.results[0][0].confidence);
+        await findResponse(text);
+        // console.log('Confidence: ' + e.results[0][0].confidence);
     });
 }
 
 function onSpeechEnd() {
     recognition.addEventListener('speechend', () => {
-        console.log("Speech has ended");
+        // console.log("Speech has ended");
         recognition.stop();
     });
 }
@@ -229,37 +159,3 @@ function onSpeechError() {
         outputBot.textContent = 'Error: ' + e.error;
     });
 }
-
-function LevenshteinDistance(a, b) {
-    if (a.length == 0) return b.length;
-    if (b.length == 0) return a.length;
-
-    var matrix = [];
-
-    // increment along the first column of each row
-    var i;
-    for (i = 0; i <= b.length; i++) {
-        matrix[i] = [i];
-    }
-
-    // increment each column in the first row
-    var j;
-    for (j = 0; j <= a.length; j++) {
-        matrix[0][j] = j;
-    }
-
-    // Fill in the rest of the matrix
-    for (i = 1; i <= b.length; i++) {
-        for (j = 1; j <= a.length; j++) {
-            if (b.charAt(i - 1) == a.charAt(j - 1)) {
-                matrix[i][j] = matrix[i - 1][j - 1];
-            } else {
-                matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, // substitution
-                    Math.min(matrix[i][j - 1] + 1, // insertion
-                        matrix[i - 1][j] + 1)); // deletion
-            }
-        }
-    }
-
-    return matrix[b.length][a.length];
-};

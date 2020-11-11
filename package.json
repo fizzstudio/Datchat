@@ -1,0 +1,24 @@
+{
+  "name": "datchat",
+  "version": "1.0.0",
+  "description": "A data chatbot project by Fizz Studio interns.",
+  "main": "Option.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fizzstudio/Datchat.git"
+  },
+  "author": "Capric Guan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fizzstudio/Datchat/issues"
+  },
+  "homepage": "https://github.com/fizzstudio/Datchat#readme",
+  "dependencies": {
+    "browserify": "^17.0.0",
+    "watchify": "^3.11.1"
+  },
+  "devDependencies": {}
+}
