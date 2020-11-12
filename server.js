@@ -1,5 +1,12 @@
+const express = require('express');
+const morgan = require('morgan');
+// const cors = require('cors');
+const path = require('path');
 const brain = require('brain.js');
 const fs = require('fs');
+
+const app = express();
+const PORT = process.env.PORT || 8080;
 
 const trainingData = [
     // between ... and ... 
@@ -79,3 +86,12 @@ const json = net.toJSON();
 const jsonStr = JSON.stringify(json);
 
 fs.writeFileSync('./trained-net.json', jsonStr, 'utf8');
+
+
+app.use(express.json());
+app.use(express.urlencoded({extended: false}));
+
+app.use(morgan('tiny'));
+
+
+app.listen(PORT, console.log(`Server is starting at ${PORT}`));

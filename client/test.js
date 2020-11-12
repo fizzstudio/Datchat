@@ -49,6 +49,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             question: 'show me the variance',
             answer: await findResponse('show me the variance')
         });
-    console.log('options', options)
+    console.log('options', options);
+    console.log(predict('past ten years'));
 
 });

@@ -2,12 +2,20 @@
 
 },{}],2:[function(require,module,exports){
 const fs = require('fs');
+const brain = require('brain.js');
 
-let data = JSON.parse(fs.readFileSync('./trained-net.json', 'utf8'));
+function predict(target) {
+    let data = JSON.parse(fs.readFileSync('./trained-net.json', 'utf8'));
 
-const net = new brain.recurrent.LSTM();
-net.fromJSON(data);
+    const net = new brain.recurrent.LSTM();
+    net.fromJSON(data);
 
-const prediction = network.run('what is the data of past ten years');
+    const prediction = net.run(target);
+    console.log(prediction);
+    return prediction;
+}
+
+const prediction = predict('what is the data of past ten years');
 console.log(prediction);
+
 },{"fs":1}]},{},[2]);
