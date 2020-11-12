@@ -61,7 +61,7 @@ const trainingData = [
 
 const net = new brain.recurrent.LSTM();
 const result = net.train(trainingData, {
-    iterations: 1,
+    iterations: 10,
     // learningRate: 0.1,
     log: (details) => console.log(details),
     // errorThresh: 0.011,
