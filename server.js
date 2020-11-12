@@ -85,7 +85,9 @@ console.log('run 6 non-range:' + run6);
 const json = net.toJSON();
 const jsonStr = JSON.stringify(json);
 
+
 fs.writeFileSync('./trained-net.json', jsonStr, 'utf8');
+fs.writeFileSync('trained-net.js', `export default ${ net.toFunction().toString() };`);
 
 
 app.use(express.json());

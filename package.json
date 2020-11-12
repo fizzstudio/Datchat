@@ -1,8 +1,22 @@
 {
-  "name": "Datchat",
+  "name": "datchat",
   "version": "1.0.0",
   "description": "A data chatbot project by Fizz Studio interns.",
-  "main": "bundle.js",
+  "main": "Option.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fizzstudio/Datchat.git"
+  },
+  "author": "Capric Guan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fizzstudio/Datchat/issues"
+  },
+  "homepage": "https://github.com/fizzstudio/Datchat#readme",
   "dependencies": {
     "axios": "^0.21.0",
     "browserify": "^17.0.0",
@@ -12,19 +26,5 @@
     "watchify": "^3.11.1"
   },
   "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/fizzstudio/Datchat.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/fizzstudio/Datchat/issues"
-  },
-  "homepage": "https://github.com/fizzstudio/Datchat#readme"
+  "keywords": []
 }

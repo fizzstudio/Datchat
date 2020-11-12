@@ -1,3 +1,6 @@
+import trainedNet from './trained-net.json';
+console.log('trainedNet', trainedNet);
+
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('findResponse',
         {
