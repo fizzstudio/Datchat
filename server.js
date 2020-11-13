@@ -5,8 +5,9 @@ const path = require('path');
 const brain = require('brain.js');
 const fs = require('fs');
 
+
 const app = express();
-const PORT = process.env.PORT || 8081;
+const PORT = process.env.PORT || 3000;
 
 let fileContent = fs.readFileSync("trained-net.json", "utf8")
 let fileContentJSON = JSON.parse(fileContent);
@@ -17,9 +18,19 @@ net.run('search range');
 console.log(net.run('can you tell me the range and standard deviation from the chart to it'));
 // console.log(fileContent);
 
-app.get('/save', (req, res) => {
-    res.send(net.run('search range'));
-})
+// app.get('/api', (req, res) => {
+//     res.send(net.run('search range'));
+// })
+
+app.post('/api', (request, response) => {
+    console.log(request.body);
+    const data = request.body;
+    response.json({
+        status: 'success',
+        latitude: data.lat,
+        longitude: data.lon
+    });
+});
 
 
 app.use(express.json());

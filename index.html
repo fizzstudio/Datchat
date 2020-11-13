@@ -51,8 +51,8 @@
         let xs = "Hello";
         let ys = "World";
 
-        document.getElementById('xs').textContent = xs;
-        document.getElementById('ys').textContent = ys;
+        // document.getElementById('xs').textContent = xs;
+        // document.getElementById('ys').textContent = ys;
 
         const content = {
             xs,
@@ -65,12 +65,11 @@
             },
             body: JSON.stringify(content)
         }
-        const response = await fetch('/api', options);
+        const response = await fetch('http://localhost:3000/api', options);
         const text = await response.text();
         console.log(text);
     }
 </script>
-
 </body>
 
 </html>
