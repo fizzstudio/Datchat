@@ -1,6 +1,3 @@
-import trainedNet from './trained-net.json';
-console.log('trainedNet', trainedNet);
-
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('findResponse',
         {
@@ -53,6 +50,25 @@ document.addEventListener('DOMContentLoaded', async () => {
             answer: await findResponse('show me the variance')
         });
     console.log('options', options);
-    console.log(predict('past ten years'));
+    // console.log(predict('past ten years'));
+
+
+    axios({
+        url: '/api/save',
+        method: 'POST',
+        data: {
+            title: 'no!',
+            body: 'Hello'
+          }
+    })
+        .then(() => {
+            console.log('data has been sent to the server');
+            this.resetUserInputs();
+            this.getBlogPost();
+        })
+        .catch(() => {
+            console.log('Internal server error')
+        })
+
 
 });
