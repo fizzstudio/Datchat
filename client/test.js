@@ -53,22 +53,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     // console.log(predict('past ten years'));
 
 
-    // axios({
-    //     url: '/api/save',
-    //     method: 'POST',
-    //     data: {
-    //         title: 'no!',
-    //         body: 'Hello'
-    //       }
-    // })
-    //     .then(() => {
-    //         console.log('data has been sent to the server');
-    //         this.resetUserInputs();
-    //         this.getBlogPost();
-    //     })
-    //     .catch(() => {
-    //         console.log('Internal server error')
-    //     })
+    getData("show me the data of 1989 from the chart");
 
-
+    async function getData(sentence) {
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({sentence})
+        }
+        const response = await fetch('/api', options);
+        const text = await response.text();
+        console.log(parseInt(JSON.parse(text).prediction));
+    }
 });
