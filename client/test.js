@@ -53,18 +53,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // console.log(predict('past ten years'));
 
 
-    getData("show me the data of 1989 from the chart");
-
-    async function getData(sentence) {
-        const options = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({sentence})
-        }
-        const response = await fetch('/api', options);
-        const text = await response.text();
-        console.log(parseInt(JSON.parse(text).prediction));
-    }
+    predict("show me the data of 1989 from the chart");
+    operateRange("show me the data between 1929 and 2010");
 });

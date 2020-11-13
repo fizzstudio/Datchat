@@ -59,7 +59,6 @@ async function findResponse(text) {
     let timestamp = date.getTime();
     let response = 'Sorry Capric';
     let selections = keywordDetect(options, text);
-    // console.log('findResponse: ', selections);
     let negated = negationDetect(negation_markers, text);
     let speech_pool = [];
 
@@ -74,9 +73,6 @@ async function findResponse(text) {
             selection.updateState(states.UNASKED);
         } else {
             selection.addAnswerRecord(response, timestamp); // Get rid of meaningless answer "you need...chart"
-            // console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-            // console.log('findResponse answer record: ', selection.getAnswerRecords());
-
         }
         speech_pool.push(response);
     };
@@ -101,6 +97,17 @@ async function findResponse(text) {
     }
     speakResponse(response);
     return response;
+}
+
+async function operateRange(text) {
+    let words = text.split(' ');
+    let ints = [];
+    words.forEach((word) => {
+        if (parseInt(word)) {
+            ints.push(parseInt(word));
+        }
+    });
+    console.log("ints", ints);
 }
 
 function speakResponse(text) {
@@ -142,7 +149,11 @@ async function onSpeechResult() {
 
         outputYou.textContent = text.charAt(0).toUpperCase() + text.slice(1);;
 
-        await findResponse(text);
+        if (predict(text) === 1) {
+            await operateRange(text);
+        } else {
+            await findResponse(text);
+        }
         // console.log('Confidence: ' + e.results[0][0].confidence);
     });
 }

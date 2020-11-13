@@ -15,12 +15,6 @@ let fileContent = fs.readFileSync("trained-net.json", "utf8")
 let fileContentJSON = JSON.parse(fileContent);
 const net = new brain.recurrent.LSTM();
 net.fromJSON(fileContentJSON);
-net.run('search range');
-console.log(net.run('can you tell me the range and standard deviation from the chart to it'));
-
-// app.get('/api', (req, res) => {
-//     res.send(net.run('search range'));
-// })
 
 app.post('/api', (request, response) => {
     console.log(request.body);

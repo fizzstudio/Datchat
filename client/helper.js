@@ -58,6 +58,21 @@ async function resultAnswer(option) {
     return response;
 }
 
+async function predict(sentence) {
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({sentence})
+    }
+    const response = await fetch('/api', options);
+    const text = await response.text();
+    const prediction = parseInt(JSON.parse(text).prediction);
+    console.log(prediction);
+    return prediction;
+}
+
 function LevenshteinDistance(a, b) {
     if (a.length == 0) return b.length;
     if (b.length == 0) return a.length;
