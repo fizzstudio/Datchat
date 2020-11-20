@@ -5,9 +5,8 @@ const path = require('path');
 const brain = require('brain.js');
 const fs = require('fs');
 
-const { response } = require('express');
 const app = express();
-app.listen(3000, () => console.log('listening at 3000'));
+app.listen(5501, () => console.log('listening at 5501'));
 app.use(express.static('client')); 
 app.use(express.json({limit: '1mb'}));
 

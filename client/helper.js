@@ -69,7 +69,7 @@ async function predict(sentence) {
     const response = await fetch('/api', options);
     const text = await response.text();
     const prediction = parseInt(JSON.parse(text).prediction);
-    console.log(prediction);
+    console.log("prediction", prediction);
     return prediction;
 }
 

@@ -114,7 +114,7 @@ function speakResponse(text) {
     const synth = window.speechSynthesis;
     const speech = new SpeechSynthesisUtterance();
     speech.text = text;
-    // synth.speak(speech);
+    synth.speak(speech);
     outputBot.textContent = speech.text.charAt(0).toUpperCase() + speech.text.slice(1);
 
     setupInterface();
@@ -149,7 +149,8 @@ async function onSpeechResult() {
 
         outputYou.textContent = text.charAt(0).toUpperCase() + text.slice(1);;
 
-        if (predict(text) === 1) {
+        if (predict(text) == 1) {
+            console.log("predict(text)", predict(text));
             await operateRange(text);
         } else {
             await findResponse(text);
