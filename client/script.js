@@ -108,6 +108,7 @@ async function operateRange(text) {
         }
     });
     console.log("ints", ints);
+    let answer = rangeAction(ints);
 }
 
 function speakResponse(text) {
@@ -149,13 +150,11 @@ async function onSpeechResult() {
 
         outputYou.textContent = text.charAt(0).toUpperCase() + text.slice(1);;
 
-        if (predict(text) == 1) {
-            console.log("predict(text)", predict(text));
+        if (await predict(text) == 1) {
             await operateRange(text);
         } else {
             await findResponse(text);
         }
-        // console.log('Confidence: ' + e.results[0][0].confidence);
     });
 }
 
