@@ -8,7 +8,7 @@ async function statAction(stat) {
         visual = new Visual('test.csv', 'Global Average Temperature from 1880', canvas, type);
         chart = await visual.createChart();
         drawn = true;
-        response = 'below is the chart'//the data of' + visual.title;
+        response = 'below is the chart of the data of' + visual.title;
     } else {
         if (!drawn) {
             response = 'you need first to have a chart.';
@@ -64,6 +64,10 @@ async function statAction(stat) {
         }
     }
     return response;
+}
+
+function rangeAction(ints) {
+    return ints
 }
 
 function refreshCanvas() {

@@ -4,7 +4,8 @@
   "description": "A data chatbot project by Fizz Studio interns.",
   "main": "Option.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -17,8 +18,14 @@
   },
   "homepage": "https://github.com/fizzstudio/Datchat#readme",
   "dependencies": {
+    "axios": "^0.21.0",
     "browserify": "^17.0.0",
+    "concurrently": "^5.3.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.10.13",
+    "morgan": "^1.10.0",
     "watchify": "^3.11.1"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "keywords": []
 }

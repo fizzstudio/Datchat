@@ -53,8 +53,8 @@ class Visual {
         let defaultDatasets = {
             label: this.title,
             data: this.ys,
-            backgroundColor: "rgba(255, 153, 102, 1)",
-            borderColor: "rgba(255, 153, 102, 1)",
+            backgroundColor: "#133f87",
+            borderColor: "#133f87",
             borderWidth: 1,
             fill: false
         }
